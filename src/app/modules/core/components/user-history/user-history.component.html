@@ -1,0 +1,57 @@
+<p-dialog modal="modal" [header]="label('lbl_historicos')" [style]="{width: '950px', height: '600px'}"
+    [(visible)]="display" [closable]="true" (onHide)="onHideDialog($event)">
+
+    <p-tabView activeIndex="0">
+
+        <p-tabPanel [header]="label('lbl_historico_acessos')">
+            <p-table #Access [value]="userLogonHistories" scrollHeight="400px"
+                [scrollable]="true">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th class="grid-col-string">{{label('lbl_data_logon')}}</th>
+                        <!-- <th class="grid-col-string">{{label('lbl_device')}}</th> -->
+                        <th class="grid-col-string">{{label('lbl_browser')}}</th>
+                        <th class="grid-col-string">{{label('lbl_endereco_ip')}}</th>
+                        <th class="grid-col-string">{{label('lbl_status')}}</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-history>
+                    <tr [pSelectableRow]="action">
+                        <td class="col-string">{{history.dateRecord | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+                        <!-- <td class="col-string">{{history.device}}</td> -->
+                        <td class="col-string">{{history.browser}}</td>
+                        <td class="col-string">{{history.ipAddress}}</td>
+                        <td class="col-string">{{history.statusLogon}}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+
+        </p-tabPanel>
+        <p-tabPanel [header]="label('lbl_historico_usuario')">
+            <p-table #History [value]="userActions" scrollHeight="400px"
+                [scrollable]="true">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th class="grid-col-string">{{label('lbl_na_data_de')}}</th>
+                        <th class="grid-col-stsring">{{label('lbl_no_setor')}}</th>
+                        <th class="grid-col-string">{{label('lbl_uma_acao_de')}}</th>
+                        <th class="grid-col-string">{{label('lbl_foi_realizada_na_entidade')}}</th>
+                        <th class="grid-col-string">{{label('lbl_de_codigo')}}</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-action>
+                    <tr [pSelectableRow]="action">
+                        <td class="col-string">{{action.dateRecord | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+                        <td class="col-string">{{action.codeSector}}</td>
+                        <td class="col-string">{{action.action}}</td>
+                        <td class="col-string">{{action.nameObject}}</td>
+                        <td class="col-string">{{action.idRecord}}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+
+        </p-tabPanel>
+   
+    </p-tabView>
+
+</p-dialog>

@@ -1,0 +1,169 @@
+<p-dialog [header]="label('lbl_relacionamentos')" [(visible)]="displayTree" [modal]="true" [style]="{width: '70vw'}"
+    [maximizable]="true" [baseZIndex]="10000" [resizable]="false" (onHide)="onHideDialog($event)">
+
+    <p-fieldset #fild
+        legend="Objetos que dependem de '{{nameObjeto}}', ou seja, {{nameObjeto}}' é atributo(FK) nesses objteos"
+        toggleable="true">
+        <p-tree [value]="treeObjetosThatDepend" layout="horizontal" selectionMode="single" [contextMenu]="cm"
+            [(selection)]="selectedTree">
+            <ng-template let-node pTemplate="default">
+                <i *ngIf="node.children?.length != 0" class="fas fa-angle-right" style="padding-right: 5px;"></i>
+                <label>{{node.label}}</label>
+            </ng-template>
+        </p-tree>
+    </p-fieldset>
+    <br>
+    <p-fieldset legend="Objetos dos quais '{{nameObjeto}}' depende, ou seja '{{nameObjeto}}' tem eles como atributo(FK)"
+        toggleable="true">
+        <p-tree [value]="treeObjetosWhichDepend" layout="horizontal" selectionMode="single" [contextMenu]="cm"
+            [(selection)]="selectedTree">
+
+            <ng-template #ndx let-node pTemplate="default">
+                <i *ngIf="node.label !== nameObjeto" class="fas fa-angle-left" style="padding-right: 5px;"></i>
+                <label>{{node.label}}</label>
+            </ng-template>
+        </p-tree>
+
+
+    </p-fieldset>
+    <br>
+    <p-contextMenu #cm [model]="items" appendTo="body" baseZIndex="99999"></p-contextMenu>
+
+
+    <!-- <div class="p-grid">
+
+        <div class="p-col-5 p-fluid">
+            <span class="form-group">
+                <label class="c-small-label" for="nameExtenalTable">{{label('lbl_base_de_dados')}}</label>
+                <input pInputText type="text" name="nameExtenalTable" [ngModel]="selectedTree?.data?.nameExtenalTable">
+            </span>
+        </div>
+
+        <div class="p-col-5 p-fluid">
+            <span class="form-group">
+                <label class="c-small-label" for="nameExternalDatabase">{{label('lbl_tabela_de_dados')}}</label>
+                <input pInputText type="text" name="nameExternalDatabase"
+                    [ngModel]="selectedTree?.data?.nameExternalDatabase">
+            </span>
+        </div>
+
+        <div class="p-col-2 p-fluid">
+            <span class="form-group">
+                <label class="c-small-label" for="numberRecord">{{label('lbl_num_de_linhas')}}</label>
+                <input pInputText type="text" name="numberRecord" [ngModel]="selectedTree?.data?.numberRecord">
+            </span>
+        </div>
+
+    </div> -->
+    <br>
+    <!-- <p-overlayPanel #opData [style]="{background: '#eff3f8'}" baseZIndex="99999">
+            <p-scrollPanel>
+                <ul>
+                    <li style="margin-left: -20px; padding-right: 10px">{{label('lbl_base_de_dados')}}:
+                        {{selectedTree?.data?.nameExternalDatabase}} </li>
+                    <li style="margin-left: -20px; padding-right: 10px">{{label('lbl_tabela_de_dados')}}:
+                        {{selectedTree?.data?.nameExtenalTable}} </li>
+                    <li style="margin-left: -20px; padding-right: 10px">{{label('lbl_num_de_linhas')}}:
+                        {{selectedTree?.data?.numberRecord}} </li>
+                </ul>
+            </p-scrollPanel>
+        </p-overlayPanel> -->
+</p-dialog>
+
+<p-dialog [header]="label('lbl_detalhe')" [(visible)]="displayDetail" [modal]="true" [style]="{width: '25vw'}"
+    [maximizable]="true" [baseZIndex]="10000">
+
+    <div class="p-grid">
+
+        <!-- <div *ngIf="selectedTree?.data?.objectCode !== ''" class="p-col-12 p-fluid">
+                <span class="form-group">
+                    <label class="c-small-label" for="objecCode">{{label('lbl_code')}}</label>
+                    <input readonly pInputText type="text" name="objecCode" [ngModel]="selectedTree?.data?.objectCode">
+                </span>
+            </div> -->
+
+        <!-- Nome da base de dados do objeto -->
+        <div *ngIf="selectedTree?.data?.nameExternalDatabase" class="p-col-12 p-fluid">
+            <span class="form-group">
+                <label class="c-small-label" for="nameExternalDatabase">{{label('Nome da base de dados do
+                    objeto')}}</label>
+                <input readonly pInputText type="text" name="nameExternalDatabase"
+                    [ngModel]="selectedTree?.data?.nameExternalDatabase">
+            </span>
+        </div>
+
+        <!-- Nome do objeto -->
+        <div *ngIf="selectedTree?.data?.objectName" class="p-col-12 p-fluid">
+            <span class="form-group">
+                <label class="c-small-label" for="objectName">{{label('Nome do objeto')}}</label>
+                <input readonly pInputText type="text" name="objectName" [ngModel]="selectedTree?.data?.objectName">
+            </span>
+        </div>
+
+        <!-- Nome da tabela do objeto na base de dados -->
+        <div *ngIf="selectedTree?.data?.nameExtenalTable" class="p-col-12 p-fluid">
+            <span class="form-group">
+                <label class="c-small-label" for="nameExtenalTable">{{label('Nome da tabela do objeto na base de
+                    dados')}}</label>
+                <input readonly pInputText type="text" name="nameExtenalTable"
+                    [ngModel]="selectedTree?.data?.nameExtenalTable">
+            </span>
+        </div>
+
+        <!-- Nome do attributo que faz referencia ao objeto -->
+        <!-- <div *ngIf="selectedTree?.data?.attributeName" class="p-col-12 p-fluid">
+            <span class="form-group">
+                <label class="c-small-label" for="nameExtenalTable">{{label('Nome do attributo que faz referencia ao objeto')}}</label>
+                <input readonly pInputText type="text" name="attributeName"
+                    [ngModel]="selectedTree?.data?.attributeName">
+            </span>
+        </div> -->
+
+        <!-- Nome da coluna attributo na tabela de dados  -->
+        <!-- <div *ngIf="selectedTree?.data?.tableColumnName !== ''" class="p-col-12 p-fluid">
+            <span class="form-group">
+                <label class="c-small-label" for="tableColumnName">{{label('Nome da coluna attributo na tabela de
+                    dados')}}</label>
+                <input readonly pInputText type="text" name="tableColumnName"
+                    [ngModel]="selectedTree?.data?.tableColumnName">
+            </span>
+        </div> -->
+
+
+        <!-- <div *ngIf="selectedTree?.data?.objectCode !== ''" class="p-col-12 p-fluid">
+                <span class="form-group">
+                    <label class="c-small-label" for="attributeType">{{label('lbl_tipo_de_dados')}}</label>
+                    <input readonly pInputText type="text" name="attributeType"
+                        [ngModel]="selectedTree?.data?.attributeType">
+                </span>
+            </div> -->
+
+        <!-- O atributo é chave? -->
+        <!-- <div *ngIf="selectedTree?.data?.attributeIsKey" class="p-col-6 p-fluid">
+            <span class="form-group">
+                <label class="c-small-label" for="attributeIsKey">{{label(' O atributo é chave?')}}</label>
+                <input readonly pInputText type="text" name="attributeIsKey"
+                    [ngModel]="selectedTree?.data?.attributeIsKey">
+            </span>
+        </div> -->
+
+        <!-- O atributo permite nulo? -->
+        <!-- <div *ngIf="selectedTree?.data?.attributeAllowNull" class="p-col-6 p-fluid">
+            <span class="form-group">
+                <label class="c-small-label" for="attributeAllowNull">{{label('O atributo permite nulo?')}}</label>
+                <input readonly pInputText type="text" name="attributeAllowNull"
+                    [ngModel]="selectedTree?.data?.attributeAllowNull">
+            </span>
+        </div> -->
+
+        <!-- Numero de registros do objeto -->
+        <div *ngIf="selectedTree?.data?.numberRecord" class=" p-col-12 p-fluid">
+            <span class="form-group">
+                <label class="c-small-label" for="numberRecord">{{label('Numero de registros do objeto')}}</label>
+                <input pInputText type="text" name="numberRecord" [ngModel]="selectedTree?.data?.numberRecord">
+            </span>
+        </div>
+
+    </div>
+
+</p-dialog>

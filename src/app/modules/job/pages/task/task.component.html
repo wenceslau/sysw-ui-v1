@@ -1,0 +1,276 @@
+<div class="c-container-page">
+    <app-user-action *ngIf="displayHistory" [inputModule]="'JOB'" [inputIdtRecord]="idRecord"
+        [inputNameObject]="nameObject" [inputDescription]="descriptionObject"
+        (hideComponentHistory)="hideComponentHistoryEvent($event)"></app-user-action>
+
+    <app-nav-bar [totalRecords]="totalRecords"></app-nav-bar>
+
+    <div class="c-container-page-containt" [style.height]="windowInnerHeightContainerPageContaint()">
+
+        <form autocomplete="off" (ngSubmit)="applyfilter()" [formGroup]="formFilter">
+            <div class="p-grid p-justify-rigth c-div-toolbar-filter">
+                <div class="p-col-fixed">
+                    <button pButton type="button" class="c-button-toolbar c-color-blue"
+                        icon="fad fa-plus-circle c-button-icon-size" [pTooltip]="label('lbl_novo_registro')"
+                        tooltipPosition="right" (click)="showDialogInput(null)">
+                    </button>
+                    <button pButton type="button" class="c-button-toolbar c-color-green"
+                        icon="fad fa-sync c-button-icon-size" [pTooltip]="label('lbl_atualizacao_de_tela')"
+                        tooltipPosition="right" (click)="refreshAll()">
+                    </button>
+                    <button pButton type="button" class="c-button-toolbar c-color-red"
+                        icon="fad fa-eraser c-button-icon-size" [pTooltip]="label('lbl_limpar_filtros')"
+                        tooltipPosition="right" (click)="clearFilter()">
+                    </button>
+                    <button pButton type="submit" icon="fad fa-filter" style="display: none;"></button>
+                </div>
+                <div class="p-col p-fluid">
+                    <span class="ui-float-label form-group">
+                        <input pInputText type="text" name="name" [placeholder]="label('lbl_pesquisar_por_nome')"
+                            formControlName="name">
+                    </span>
+                </div>
+            </div>
+        </form>
+
+        <hr>
+
+        <div class="p-grid">
+            <div class="p-col">
+                <p-table #table styleClass="p-datatable-sm" selectionMode="single" dataKey="code" [value]="tasks"
+                    [paginator]="paginator" [rows]="rows" [responsive]="true" [(selection)]="selectedRowMainTable"
+                    [loading]="loadingTable">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th class="grid-col-action-2b">{{label('lbl_acoes')}}</th>
+                            <th class="grid-col-id">ID</th>
+                            <th style="width: 15%">{{label('lbl_nome')}} </th>
+                            <th>{{label('lbl_descricao')}}</th>
+                            <th>{{label('lbl_frequencia')}}</th>
+                            <th>{{label('lbl_agenda')}}</th>
+                            <th>{{label('lbl_estado')}}</th>
+                            <th class="grid-col-status">Status</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-model>
+                        <tr [pSelectableRow]="model">
+                            <td class="grid-col-action-2b">
+                                <button pButton class="c-button-grid c-color-green" icon="fad fa-pencil"
+                                    [pTooltip]="label('lbl_editar')" tooltipPosition="top"
+                                    (click)="showDialogInput(model.code)">
+                                </button>
+                                <button class="c-button-grid c-color-blue" pButton icon="fad fa-indent"
+                                    [pTooltip]="label('lbl_historico')" tooltipPosition="top"
+                                    (click)="showComponentHistory(attribute, model.code, model.name, 'Task')">
+                                </button>
+                            </td>
+                            <td [class]="classRowInactive('grid-col-id',model.status)">
+                                {{model.code}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',model.status)">
+                                {{model.name}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',model.status)">
+                                {{model.description}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',model.status)">
+                                {{model.frequency}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',model.status)">
+                                {{model.scheduler}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',model.status)">
+                                {{model.state}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-status',model.status)">
+                                <input type="checkbox" onclick="return false;" [checked]='model.status' />
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+            <div class="p-col-fixed" style="width:163px">
+                <app-info-model [inputModule]="'JOB'" [inputTotalRecords]="totalRecords" [inputEntity]="'Task'">
+                </app-info-model>
+            </div>
+        </div>
+
+        <!-- Input Dialog -->
+        <p-dialog #dlgInp modal="modal" [header]="handler.share.navigation" [style]="{width: '700px'}" [closable]="true"
+            [(visible)]="displayInput">
+            <form autocomplete="off" (ngSubmit)="save()" [formGroup]="formInput">
+                <div class="p-grid">
+
+                    <div class="p-col-6 p-fluid">
+                        <span class="form-group">
+                            <label class="c-small-label"
+                                for="codeBusinessUnit">{{label('lbl_unidade_de_negocio')}}</label>
+                            <p-dropdown required name="codeBusinessUnit" optionLabel="name" optionValue="code"
+                                formControlName="codeBusinessUnit" appendTo="body" placeholder="."
+                                [options]="businessUnitLst"></p-dropdown>
+                        </span>
+                    </div>
+
+                    <div class="p-col-6 p-fluid">
+                        <span class="form-group">
+                            <label class="c-small-label" for="name">{{label('lbl_nome')}}</label>
+                            <input pInputText required type="text" name="name" formControlName="name">
+                        </span>
+                    </div>
+
+                    <div class="p-col-12 p-fluid">
+                        <span class="form-group">
+                            <label class="c-small-label" for="description">{{label('lbl_descricao')}}</label>
+                            <input pInputText required type="text" name="description" formControlName="description">
+                        </span>
+                    </div>
+
+                    <div class="p-col-3 p-fluid">
+                        <span class="form-group">
+                            <label class="c-small-label" for="frequency">{{label('lbl_frequencia')}}</label>
+                            <p-dropdown required name="frequency" formControlName="frequency" placeholder="."
+                                appendTo="body" [options]="frequecies" (onChange)="onChangeFrequency($event)">
+                            </p-dropdown>
+                        </span>
+                    </div>
+
+                    <div class="p-col-3 p-fluid">
+                        <span class="form-group">
+                            <label class="c-small-label" for="scheduler">{{label('lbl_agenda')}}</label>
+                            <p-dropdown required name="scheduler" formControlName="scheduler" placeholder="."
+                                appendTo="body" [options]="schedulers">
+                            </p-dropdown>
+                        </span>
+                    </div>
+
+                    <div class="p-col-3 p-fluid">
+                        <span class="form-group">
+                            <label class="c-small-label" for="state">{{label('lbl_estado')}}</label>
+                            <p-dropdown required name="state" formControlName="state" placeholder="." appendTo="body"
+                                [options]="states">
+                            </p-dropdown>
+                        </span>
+                    </div>
+
+                    <div class="p-col-3 p-fluid">
+                        <span class="form-group">
+                            <label class="c-small-label" for="benRun">{{label('lbl_bean')}}</label>
+                            <input pInputText required type="text" name="benRun" formControlName="benRun">
+                        </span>
+                    </div>
+
+                    <div class="p-col-12">
+                        <label class="c-small-label" for="table">{{label('lbl_propriedade')}}</label>
+                        <p-table #tableThird styleClass="p-datatable-sm" [value]="taskProperties" [responsive]="true"
+                            [scrollable]="true" scrollHeight="180px">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th style="width: 50%">{{label('lbl_nome')}}</th>
+                                    <th style="width: 50%">{{label('lbl_valor')}}</th>
+                                    <th class="grid-col-action-1b"></th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-property let-rowIndex="rowIndex">
+                                <tr>
+                                    <td [class]="classRowInactive('grid-col-string',property.status)"
+                                        style="width: 50%">
+                                        {{property.name}}
+                                    </td>
+                                    <td [class]="classRowInactive('grid-col-string',property.status)"
+                                        style="width: 50%">
+                                        {{property.value}}
+                                    </td>
+                                    <td class="grid-col-action-1b">
+                                        <button pButton class="c-button-grid c-color-blue" icon="fad fa-pencil"
+                                            type="button" [pTooltip]="label('lbl_editar')" tooltipPosition="top"
+                                            (click)="preparerEditProperty(property, rowIndex)"
+                                            [disabled]="canDisable('CORE_DATA_SERVICE_UPDATE')">
+                                        </button>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+
+                    <div class="p-col-12" style="margin-bottom: -20px;">
+                        <hr>
+                        <p-toolbar styleClass="c-tooblar-dialog">
+                            <div class="p-toolbar-group-left">
+                                <span style="padding-right: 8px;">
+                                    <p-checkbox [label]="label('lbl_ativo')" name="status" formControlName="status"
+                                        binary="true">
+                                    </p-checkbox>
+                                </span>
+                                <span style="padding-right: 8px;">
+                                    <p-checkbox [label]="label('lbl_notify')" name="notify" formControlName="notify"
+                                        binary="true">
+                                    </p-checkbox>
+                                </span>
+                            </div>
+                            <div class="p-toolbar-group-right">
+                                <button pButton class="p-button-sm" type="submit" icon="fad fa-check-double"
+                                    [label]="label('lbl_salvar')"
+                                    [disabled]="canDisable('JOB_TASK_INSERT') || canDisable('JOB_TASK_UPDATE') || !formInput.valid">
+                                </button>
+                                <button pButton class="p-button-sm c-color-back-red" type="button"
+                                    icon="fad fa-window-close" [label]="label('lbl_fechar')" autofocus="true"
+                                    (click)="hidenDialogInput()">
+                                </button>
+                                <button pButton class="p-button-sm p-button-success" type="button"
+                                    icon="fad fa-plus-circle" [label]="label('lbl_nova_propriedade')"
+                                    (click)="preparerNewProperty()" [disabled]="!editing">
+                                </button>
+                            </div>
+                        </p-toolbar>
+                    </div>
+
+                </div>
+            </form>
+        </p-dialog>
+
+        <p-dialog [header]="label('lbl_propriedade')" modal="modal" [(visible)]="displayPropertyInput"
+            [responsive]="true" [closable]="true" [style]="{width: '450px'}">
+            <form autocomplete="off" (ngSubmit)="confirmProperty()" [formGroup]="formPropertyInput">
+                <div>
+                    <div class="p-grid p-fluid">
+                        <div class="p-col-12">
+                            <span class="form-group">
+                                <label class="c-small-label" for="name">{{label('lbl_nome')}}</label>
+                                <input pInputText required type="text" name="name" formControlName="name">
+                            </span>
+                        </div>
+                        <div class="p-col-12">
+                            <span class="form-group">
+                                <label class="c-small-label" for="value">{{label('lbl_valor')}}</label>
+                                <input pInputText required name="value" formControlName="value">
+                            </span>
+                        </div>
+
+                        <div class="p-col-12">
+                            <span class="form-group">
+                                <label class="c-small-label" for="description">{{label('lbl_descricao')}}</label>
+                                <input pInputText required type="text" name="description" formControlName="description">
+                            </span>
+                        </div>
+
+                        <div class="p-col-12" style="margin-bottom: -20px;">
+                            <hr>
+                            <p-toolbar styleClass="c-tooblar-dialog">
+                                <div class="p-toolbar-group-left">
+                                </div>
+                                <div class="p-toolbar-group-right">
+                                    <button pButton class="p-button-sm" type="submit" pButton icon="fad fa-check-double"
+                                        [label]="label('lbl_adicionar')" [disabled]="!formPropertyInput.valid">
+                                    </button>
+                                </div>
+                            </p-toolbar>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </p-dialog>
+
+
+
+    </div>
+</div>

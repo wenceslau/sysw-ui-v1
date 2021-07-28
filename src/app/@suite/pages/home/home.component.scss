@@ -1,0 +1,44 @@
+
+//Styles card favorite menus
+
+.megaMenu{
+    color:#004A95;
+    font-weight: normal;
+    padding: 2px;
+}
+
+.megaMenu ul{
+    list-style: none;
+    padding: 0px;
+    margin:0px;
+}
+
+.megaMenu li{
+    border-radius: 3px;
+    margin:0px 0px 0px 0px;
+    padding: 5px 0px 5px 0px;
+}
+
+.megaMenu a{
+    color:black;
+    border-radius: 3px;
+    padding: 5px;
+    text-decoration: none;
+}
+
+.megaMenu i{
+    margin: 0px 12px 0px 10px;
+    width:15px;
+    text-align: center;
+}
+
+.containerItensMegaMenu{
+    float: left;
+    width: 100%;
+    position: relative;
+    text-align: left;
+}
+
+#favList a:hover{
+    color:rgb(0, 74, 149);
+}

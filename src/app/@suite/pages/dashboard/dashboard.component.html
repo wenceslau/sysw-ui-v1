@@ -1,0 +1,188 @@
+<div class="c-container-page">
+    <app-nav-bar></app-nav-bar>
+
+    <div class="container-dashboard">
+
+        <p-tabView (onChange)="onTabChange($event)">
+
+            <!-- <p-tabPanel [header]="label('lbl_system')">
+                <app-dash-system></app-dash-system>
+            </p-tabPanel> -->
+
+            <p-tabPanel *ngIf="!canDisable('CORE_DASHBOARD_LOGON_VIEWER')" [header]="label('lbl_acesso')">
+                <div class="p-grid">
+                    <div class="p-col-10">
+                        <p-panel>
+                            <p-header>
+                                <a href="javascript:void(0);" (click)="chartLogonByDay()">
+                                    <i class="fad fa-sync c-color-green"></i>
+                                </a>
+                                {{label('lbl_historico_de_acessos')}}
+                            </p-header>
+                            <p-chart type="bar" [height]="heightChart" [data]="data"></p-chart>
+                        </p-panel>
+                    </div>
+                    <div class="p-col-2" style="margin-left: -10px">
+                        <p-panel #loggd>
+                            <p-header>
+                                <a href="javascript:void(0);" (click)="listLogged()">
+                                    <i class="fad fa-sync c-color-green"></i>
+                                </a>
+                                {{label('lbl_usuarios_online')}}
+                            </p-header>
+                            <div id="div1" style="margin: -6px ">
+                                <p-table styleClass="p-datatable-sm" [scrollHeight]="scrollHeightTableUserOnline"
+                                    [value]="loggeds" [scrollable]="true">
+                                    <ng-template pTemplate="header">
+                                        <tr>
+                                            <th class="grid-col-string" style="width: 60%"> {{label('lbl_usuario')}}
+                                            </th>
+                                            <th class="grid-col-string" style="width: 40%">{{label('lbl_tempo')}}</th>
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="body" let-logged>
+                                        <tr>
+                                            <td class="grid-col-string" style="width: 60%">{{logged.username}}
+                                            <td class="grid-col-string" style="width: 40%">{{logged.timeLogged}}</td>
+                                        </tr>
+                                    </ng-template>
+                                </p-table>
+                            </div>
+                        </p-panel>
+                    </div>
+                    <div class="p-col-12" *ngIf="handler.share.receiveNotify" style="padding-top: 4px; ">
+                        <app-notification scrollHeight="150px"></app-notification>
+                    </div>
+                </div>
+            </p-tabPanel>
+
+            <p-tabPanel *ngIf="!canDisable('CORE_DASHBOARD_LOG_SUITE_VIEWER')" [header]="label('lbl_suite')">
+
+                <p-accordion>
+                    <p-accordionTab header=" {{label('lbl_logs_suite')}}">
+
+                        <p-table styleClass="p-datatable-sm" [value]="fileLogs" [scrollable]="true"
+                            [scrollHeight]="scrollHeightTableUserOnline">
+                            <ng-template pTemplate="caption">
+                                <div class="p-d-flex p-ai-center p-jc-between" style="font-size: 1.1rem;">
+                                    <a href="javascript:void(0);" (click)="listFileLogs()">
+                                        <i class="fad fa-sync c-color-green"></i>
+                                    </a>
+                                </div>
+                            </ng-template>
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th class="grid-col-string">{{label('lbl_diretorio')}}</th>
+                                    <th class="grid-col-string">{{label('lbl_arquivo')}}</th>
+                                    <th class="grid-col-string">{{label('lbl_ultima_alteracao')}}</th>
+                                    <th class="grid-col-action-2b"></th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-fileLog>
+                                <tr>
+                                    <td class="grid-col-string">{{fileLog.path}}</td>
+                                    <td class="grid-col-string">{{fileLog.name}}</td>
+                                    <td class="grid-col-string">{{fileLog.lastUpdate | date:'dd/MM/yy HH:mm:ss'}}
+                                    </td>
+                                    <td class="grid-col-action-2b">
+                                        <button class="c-button-grid c-color-blue" pButton icon="fad fa-file-download"
+                                            [pTooltip]="label('lbl_download')" tooltipPosition="top"
+                                            (click)="downloadFileLog(fileLog)"></button>
+                                        <button disabled class="c-button-grid c-color-blue" pButton
+                                            icon="fad fa-envelope" [pTooltip]="label('lbl_enviar_por_email')"
+                                            tooltipPosition="top" (click)="downloadFileLog(fileLog)"></button>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </p-accordionTab>
+                    <p-accordionTab header="{{label('lbl_ultimos_erros')}}">
+
+                        <p-table styleClass="p-datatable-sm" [resetPageOnSort]="false"
+                            [scrollHeight]="scrollHeightTableUserOnline" [value]="errors" [scrollable]="true">
+                            <ng-template pTemplate="caption">
+                                <div class="p-d-flex p-ai-center p-jc-between" style="font-size: 1.1rem;">
+                                    <a href="javascript:void(0);" (click)="listErros()">
+                                        <i class="fad fa-sync c-color-green"></i>
+                                    </a>
+                                </div>
+                            </ng-template>
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th class="grid-col-string" style="width: 200px;"
+                                        [pSortableColumn]="'dateTimeError'">
+                                        {{label('lbl_data')}}
+                                    </th>
+                                    <th class="grid-col-string" style="width: 200px;" [pSortableColumn]="'message'">
+                                        {{label('lbl_mensagem')}}
+                                    </th>
+                                    <th class="grid-col-string" [pSortableColumn]="'message'">
+                                        {{label('lbl_causa')}}
+                                    </th>
+                                    <th class="grid-col-string" style="width: 70px;" [pSortableColumn]="'code'">
+                                        {{label('lbl_usuario')}}
+                                    </th>
+                                    <th class="grid-col-string" style="width: 70px;" [pSortableColumn]="'codeUser'">
+                                        {{label('lbl_setor')}}
+                                    </th>
+                                    <th style="width: 7%; text-align: center;" [pSortableColumn]="'codeSector'">
+                                        {{label('lbl_stack')}}</th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-error>
+                                <tr>
+                                    <td class="grid-col-string" style="width: 200px;">{{error.dateTimeError |
+                                        date:'dd/MM/yyyy HH:mm:ss'}}
+                                    </td>
+                                    <td class="grid-col-string" style="width: 200px;">{{getTypeException(error.message)}}</td>
+                                    <td class="grid-col-string">{{error.causes}}</td>
+                                    <td class="grid-col-string" style="width: 70px;">{{error.codeUser}}</td>
+                                    <td class="grid-col-string" style="width: 70px;">{{error.codeSector}}</td>
+                                    <td class="grid-col-action-2b">
+                                        <button class="c-button-grid c-color-blue" pButton icon="fab fa-stack-overflow"
+                                            pTooltip="Stack Error" (click)="showStackError(error.stack)"></button>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </p-accordionTab>
+                    <p-accordionTab header="{{label('lbl_historico_de_erros')}}" [selected]="false">
+                        <p-panel>
+                            <p-header>
+                                <a href="javascript:void(0);" (click)="chartErrorByDay()">
+                                    <i class="fad fa-sync c-color-green"></i>
+                                </a>
+                            </p-header>
+                            <p-chart type="bar" [height]="heightChart" [data]="dataChartError"></p-chart>
+                        </p-panel>
+                    </p-accordionTab>
+                </p-accordion>
+
+                <div style="margin-top: -10px;">
+                    <div class="p-col-6">
+
+                    </div>
+                    <div class="p-col-6" style="margin-left: -10px">
+
+                    </div>
+                    <div class="p-col-12">
+
+                    </div>
+                </div>
+            </p-tabPanel>
+
+        </p-tabView>
+
+    </div>
+    <p-dialog header="Stack" modal="modal" [style]="{width: '900px'}" [closable]="true" [(visible)]="showStack">
+        <div class="p-grid">
+            <div class="p-col-12 p-fluid">
+                <textarea pInputTextarea [class]="classReadonlyInput(true, 2)" readonly [rows]="15" [cols]="118"
+                    [(ngModel)]="stackError"></textarea>
+            </div>
+
+        </div>
+
+    </p-dialog>
+
+</div>

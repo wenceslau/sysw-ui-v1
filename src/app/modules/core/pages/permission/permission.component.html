@@ -1,0 +1,285 @@
+<div class="c-container-page">
+
+    <app-user-action *ngIf="displayHistory" [inputModule]="'CORE'" [inputIdtRecord]="idRecord"
+        [inputNameObject]="nameObject" [inputDescription]="descriptionObject"
+        (hideComponentHistory)="hideComponentHistoryEvent($event)"></app-user-action>
+
+    <app-nav-bar [totalRecords]="totalRecords"></app-nav-bar>
+
+    <div class="c-container-page-containt" [style.height]="windowInnerHeightContainerPageContaint()">
+
+        <form autocomplete="off" (ngSubmit)="filter()" [formGroup]="formFilter">
+            <div class="p-grid p-justify-rigth c-div-toolbar-filter">
+                <div class="p-col-fixed">
+                    <button pButton type="button" class="c-button-toolbar c-color-blue"
+                        icon="fad fa-plus-circle c-button-icon-size" tooltipPosition="right"
+                        [pTooltip]="label('lbl_novo_registro')" [disabled]="canDisable('CORE_PERMISSION_INSERT')"
+                        (click)="showDialogInput(null)">
+                    </button>
+                    <button pButton type="button" class="c-button-toolbar c-color-green"
+                        icon="fad fa-sync c-button-icon-size" tooltipPosition="right"
+                        [pTooltip]="label('lbl_atualizacao_de_tela')" (click)="listAll()">
+                    </button>
+                    <button pButton type="button" class="c-button-toolbar c-color-red"
+                        icon="fad fa-eraser c-button-icon-size" [pTooltip]="label('lbl_limpar_filtros')"
+                        tooltipPosition="right" (click)="clearFilter()">
+                    </button>
+                    <button pButton type="button" class="c-button-toolbar c-color-green"
+                        icon="fad fa-pencil-ruler c-button-icon-size" tooltipPosition="right"
+                        [pTooltip]="label('lbl_aplicar_regras_permissao_v_p')"
+                        (click)="apllyRulesPermissionProfile()"></button>
+                    <button pButton type="submit" icon="fad fa-filter" style="display: none;"></button>
+                </div>
+                <div class="p-col p-fluid">
+                    <span class="ui-float-label form-group">
+                        <p-dropdown name="role" [options]="roles" formControlName="role" [showClear]="true"
+                            [placeholder]="label('lbl_pesquisar_por_permissao')" (onChange)="onChangeFilter()">
+                        </p-dropdown>
+                    </span>
+                </div>
+                <div class="p-col p-fluid">
+                    <span class="ui-float-label form-group">
+                        <input pInputText type="text" name="strApplication" formControlName="strApplication"
+                            [placeholder]="label('lbl_pesquisar_por_aplicacao')">
+                    </span>
+                </div>
+                <div class="p-col p-fluid">
+                    <span class="ui-float-label form-group">
+                        <input pInputText type="text" name="module" formControlName="module"
+                            [placeholder]="label('lbl_pesquisar_por_modulo')">
+                    </span>
+                </div>
+                <div class="p-col p-fluid">
+                    <span class="ui-float-label form-group">
+                        <p-dropdown name="component" [options]="components" formControlName="component"
+                            [placeholder]="label('lbl_pesquisar_por_componente')" [showClear]="true"
+                            (onChange)="onChangeFilter()">
+                        </p-dropdown>
+                    </span>
+                </div>
+                <div class="p-col p-fluid">
+                    <span class="ui-float-label form-group">
+                        <p-dropdown name="orderby" [options]="orderBy" formControlName="orderBy"
+                            [placeholder]="label('lbl_ordenar')" [showClear]="true" (onChange)="onChangeFilter()">
+                        </p-dropdown>
+                    </span>
+                </div>
+                <div class="p-col p-fluid">
+                    <span class="ui-float-label form-group">
+                        <p-dropdown name="status" [options]="status" formControlName="status"
+                            [placeholder]="label('lbl_pesquisar_por_status')" [showClear]="true"
+                            (onChange)="onChangeFilter()">
+                        </p-dropdown>
+                    </span>
+                </div>
+            </div>
+        </form>
+
+        <hr>
+
+        <div class="p-grid">
+
+            <div class="p-col">
+
+                <p-table #table styleClass="p-datatable-sm" selectionMode="single" [(selection)]="selectedRowMainTable"
+                    [value]="permissions" [responsive]="true" [paginator]="paginator" [rows]="rows">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th class="grid-col-id">ID</th>
+                            <th >{{label('lbl_tipo')}}</th>
+                            <th >{{label('lbl_aplicacao')}}</th>
+                            <th >{{label('lbl_modulo')}}</th>
+                            <th >{{label('lbl_permissao')}}</th>
+                            <th >{{label('lbl_descricao')}}</th>
+                            <th >{{label('lbl_rotulo')}}</th>
+                            <th class="grid-col-status">Status</th>
+                            <th class="grid-col-action-2b"></th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-permission>
+                        <tr [pSelectableRow]="permission">
+                            <td [class]="classRowInactive('grid-col-id',permission.status)">
+                                {{permission.code}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',permission.status)">
+                                {{descriptionTypePermission(permission.type)}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',permission.status)">
+                                {{permission.application.name}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',permission.status)">
+                                {{permission.module}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',permission.status)">
+                                {{permission.role}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',permission.status)">
+                                {{permission.description}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',permission.status)">
+                                {{permission.label}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-status',permission.status)">
+                                {{permission.status ? 'Ativo' : 'Inativo'}}
+                            </td>
+                            <td class="grid-col-action-2b">
+                                <button class="c-button-grid c-color-green" pButton icon="fad fa-pencil"
+                                    [pTooltip]="label('lbl_editar')" tooltipPosition="top"
+                                    (click)="showDialogInput(permission.code)"
+                                    [disabled]="canDisable('CORE_PERMISSION_UPDATE')"></button>
+                                <button class="c-button-grid c-color-blue" pButton icon="fad fa-indent"
+                                    [pTooltip]="label('lbl_historico')" tooltipPosition="left"
+                                    (click)="showComponentHistory(permission, permission.code, permission.description, 'Permission')"></button>
+
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+
+            </div>
+            <div class="p-col-fixed" style="width:163px">
+
+                <app-info-model [inputModule]="'CORE'" [inputTotalRecords]="totalRecords" [inputEntity]="'Permission'">
+                </app-info-model>
+
+            </div>
+        </div>
+
+
+    </div>
+
+    <p-dialog modal="modal" [header]="handler.share.navigation" [responsive]="true" [closable]="true"
+        [style]="{width: '600px'}" [(visible)]="displayInput">
+        <form autocomplete="off" (ngSubmit)="savePermission()" [formGroup]="formInput">
+            <div class="p-grid p-fluid">
+                <div class="p-col-6">
+                    <span class="form-group">
+                        <label class="c-small-label" for="type">{{label('lbl_tipo')}}</label>
+                        <p-dropdown name="type" formControlName="type" placeholder="." appendTo="body" filter="false"
+                            [options]="types" required></p-dropdown>
+                    </span>
+                </div>
+                <div class="p-col-6">
+                    <span class="form-group">
+                        <label class="c-small-label" for="application">{{label('lbl_aplicacao')}}</label>
+                        <p-dropdown name="profile" optionLabel="name" formControlName="application" placeholder="."
+                            appendTo="body" [options]="applications" (onChange)="onChangeApplication()" required>
+                        </p-dropdown>
+                    </span>
+                </div>
+                <div class="p-col-6">
+                    <span class="form-group">
+                        <label class="c-small-label" for="module">{{label('lbl_modulo')}}</label>
+                        <p-dropdown name="module" formControlName="module" placeholder="." appendTo="body" filter="false"
+                            [options]="modules" required></p-dropdown>
+                    </span>
+                </div>
+                <div class="p-col-6">
+                    <span class="form-group">
+                        <label class="c-small-label" for="role">{{label('lbl_permissao')}}</label>
+                        <p-dropdown name="role" formControlName="role" placeholder="." appendTo="body"
+                            (onChange)="onChangeRole()" [options]="roles" required></p-dropdown>
+                    </span>
+                </div>
+                <div class="p-col-12">
+                    <span class="form-group">
+                        <label class="c-small-label"
+                            for="predecessorPermission">{{label('lbl_permissao_predecessora')}}</label>
+                        <p-multiSelect name="predecessorPermission" [options]="predecessorPermisions"
+                            formControlName="predecessorPermission" filter="true" maxSelectedLabels="0"
+                            showToggleAll="false" selectedItemsLabel="{0} item(s) selecionado" defaultLabel="."
+                            scrollHeight="300px" appendTo="body"></p-multiSelect>
+                    </span>
+                </div>
+                <div class="p-col-9">
+                    <span class="form-group">
+                        <label class="c-small-label" for="description">{{label('lbl_descricao')}}</label>
+                        <input pInputText type="text" name="description" formControlName="description" required>
+                    </span>
+                </div>
+                <div class="p-col-3">
+                    <span class="form-group">
+                        <label class="c-small-label" for="role">{{label('lbl_componente')}}</label>
+                        <p-dropdown name="component" formControlName="component" appendTo="body" placeholder="."
+                            [options]="components" [showClear]="true" (onChange)="onChangeComponent()">
+                        </p-dropdown>
+                    </span>
+                </div>
+                <div class="p-col-4">
+                    <span class="form-group">
+                        <label class="c-small-label" for="sequenceRoot">{{label('lbl_sequencia_raiz')}}</label>
+                        <input pInputText type="text" name="sequenceRoot" formControlName="sequenceRoot" required>
+                    </span>
+                </div>
+                <div class="p-col-4">
+                    <span class="form-group">
+                        <label class="c-small-label" for="root">{{label('lbl_raiz')}}</label>
+                        <input pInputText type="text" name="root" formControlName="root" required>
+                    </span>
+                </div>
+                <div class="p-col-3">
+                    <span class="form-group">
+                        <label class="c-small-label" for="icon">{{label('lbl_icone')}}</label>
+                        <input pInputText type="text" name="icon" formControlName="icon">
+                    </span>
+                </div>
+                <div class="p-col-1" style="width: 30px">
+                    <span class="form-group">
+                        <i style="padding-top: 18px; font-size: 2.3rem;" [class]="formInput.get('icon').value"></i>
+                    </span>
+                </div>
+                <div class="p-col-4">
+                    <span class="form-group">
+                        <label class="c-small-label" for="description">{{label('lbl_rotulo')}}</label>
+                        <input pInputText type="text" name="label" formControlName="label" required>
+                    </span>
+                </div>
+                <div class="p-col-4">
+                    <span class="form-group">
+                        <label class="c-small-label" for="router">{{label('lbl_rota')}}</label>
+                        <input pInputText type="text" name="router" formControlName="router" required>
+                    </span>
+                </div>
+                <div class="p-col-4">
+                    <span class="form-group">
+                        <label class="c-small-label" for="sequence">{{label('lbl_sequencia')}}</label>
+                        <input pInputText type="text" name="sequence" formControlName="sequence" required>
+                    </span>
+                </div>
+                <div class="p-col-12">
+                    <span class="form-group">
+                        <input pInputText style="font-style: italic" type="text" name="key" formControlName="key"
+                            readonly>
+                    </span>
+                </div>
+                <div class="p-col-12">
+                    <hr>
+                    <p-toolbar styleClass="c-tooblar-dialog">
+                        <div class="p-toolbar-group-left">
+                            <span style="padding-right: 10px;">
+                                <p-checkbox [label]="label('lbl_ativo')" name="status" formControlName="status"
+                                    binary="true">
+                                </p-checkbox>
+                            </span>
+                            <span style="padding-right: 10px;">
+                                <p-checkbox [label]="label('lbl_toolbar')" name="toolbar" formControlName="toolbar"
+                                    binary="true">
+                                </p-checkbox>
+                            </span>
+                            <p-checkbox [label]="label('lbl_raiz_toolbar')" name="rootToolbar"
+                                formControlName="rootToolbar" binary="true">
+                            </p-checkbox>
+                        </div>
+                        <div class="p-toolbar-group-right">
+                            <button pButton class="p-button-sm" type="submit" pButton icon="fad fa-check-double"
+                                [label]="label('lbl_salvar')" [disabled]="!formInput.valid"></button>
+                            <button pButton class="p-button-sm c-color-back-red" type="button" pButton
+                                icon="fad fa-times" [label]="label('lbl_fechar')" (click)="hidenDialogInput()"></button>
+                        </div>
+                    </p-toolbar>
+                </div>
+            </div>
+        </form>
+    </p-dialog>
+
+</div>

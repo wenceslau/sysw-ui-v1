@@ -1,0 +1,24 @@
+<p-card #sys [style]="{width: '100%', height: '99%', backgroundColor: '#F6F9FC', 'text-align':'center' }">
+    <div class="p-col-12 ">
+        <br>
+        <i [class]="classIcon5X(infoModel?.permission?.icon)"></i>
+        <h2><label style="color: #708Da9;">{{handler.share.navigation}}</label> </h2>
+        <h4><label style="color: #444444;">{{inputTotalRecords}} {{label('lbl_registro_s')}}</label></h4>
+        <h4>
+            <div style="font-weight: bold; color: #444444;">
+                <label>{{label('lbl_ultima_atualizacao_realizada_e')}}</label>
+            </div>
+        </h4>
+        <div><label>{{infoModel?.lastUpdate | date:'dd/MM/yyyy HH:mm:ss'}}</label> </div>
+        <h4>
+            <div style="font-weight: bold; color: #444444;"><label>{{label('lbl_por')}}:</label> </div>
+        </h4>
+        <div><label style="color: #444444;">{{infoModel?.updatedBy}}</label></div>
+    </div>
+</p-card>
+<br>
+<br>
+
+<p-blockUI [target]="sys" [blocked]="loadingInfo">
+    <i class="pi pi-spin pi-spinner" style="font-size: 5rem; color: whitesmoke;"></i>
+</p-blockUI>

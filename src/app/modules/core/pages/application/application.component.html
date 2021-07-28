@@ -1,0 +1,164 @@
+<div class="c-container-page">
+    <app-user-action *ngIf="displayHistory" [inputModule]="'CORE'" [inputIdtRecord]="idRecord"
+        [inputNameObject]="nameObject" [inputDescription]="descriptionObject"
+        (hideComponentHistory)="hideComponentHistoryEvent($event)"></app-user-action>
+
+    <app-nav-bar [totalRecords]="totalRecords"></app-nav-bar>
+
+    <div class="c-container-page-containt" [style.height]="windowInnerHeightContainerPageContaint()">
+
+        <form autocomplete="off">
+            <div class="p-grid p-justify-rigth c-div-toolbar-filter">
+                <div class="p-col-fixed">
+                    <button pButton type="button" class="c-button-toolbar c-color-blue"
+                        icon="fad fa-plus-circle c-button-icon-size" [pTooltip]="label('lbl_novo_registro')"
+                        tooltipPosition="right" (click)="showDialogInput(null)"
+                        [disabled]="canDisable('CORE_APPLICATION_INSERT')">
+                    </button>
+                    <button pButton type="button" class="c-button-toolbar c-color-green"
+                        icon="fad fa-sync c-button-icon-size" [pTooltip]="label('lbl_atualizacao_de_tela')"
+                        tooltipPosition="right" (click)="initListApplication()">
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <hr>
+
+        <div class="p-grid">
+            <div class="p-col">
+
+                <p-table #table styleClass="p-datatable-sm" selectionMode="single" [(selection)]="selectedRowMainTable"
+                    [value]="applications" [responsive]="true" dataKey="code">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th class="grid-col-id">ID</th>
+                            <th style="width: 15%">{{label('lbl_nome')}}</th>
+                            <th >{{label('lbl_nome_exibicao')}}</th>
+                            <th >{{label('lbl_modulo_codigo_fonte')}}</th>
+                            <th >{{label('lbl_imagen')}}</th>
+                            <th class="grid-col-status">{{label('lbl_principal')}}</th>
+                            <th class="grid-col-status">Status</th>
+                            <th class="grid-col-action-2b"></th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-application>
+                        <tr [pSelectableRow]="application">
+                            <td [class]="classRowInactive('grid-col-id',application.status)">
+                                {{application.code}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',application.status)">
+                                {{application.name}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',application.status)">
+                                {{application.displayName}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',application.status)">
+                                {{application.nameModuleSource}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',application.status)">
+                                {{application.image}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-status',application.status)">
+                                {{application.main ? 'Sim' : 'Não'}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-status',application.status)">
+                                {{application.status ? 'Ativo' : 'Inativo'}}
+                            </td>
+                            <td class="grid-col-action-2b">
+                                <button pButton class="c-button-grid c-color-green" icon="fad fa-pencil"
+                                    [pTooltip]="label('lbl_editar')" tooltipPosition="top"
+                                    (click)="showDialogInput(application.code)"
+                                    [disabled]="canDisable('CORE_APPLICATION_UPDATE')">
+                                </button>
+                                <button class="c-button-grid c-color-blue" pButton icon="fad fa-indent"
+                                    [pTooltip]="label('lbl_historico')" tooltipPosition="left"
+                                    (click)="showComponentHistory(application, application.code, application.displayName, 'Application')">
+                                </button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+
+            </div>
+            <div class="p-col-fixed" style="width:163px">
+
+                <app-info-model [inputModule]="'CORE'" [inputTotalRecords]="totalRecords" [inputEntity]="'Application'">
+                </app-info-model>
+
+            </div>
+        </div>
+
+    </div>
+
+    <p-dialog modal="modal" [header]="handler.share.navigation" [(visible)]="displayInput"
+        [closable]="true" [style]="{width: '600px'}">
+        <form autocomplete="off" (ngSubmit)="saveApplication()" [formGroup]="formInput">
+            <div class="p-grid p-fluid">
+                <div class="p-col-12">
+                    <span class="form-group">
+                        <label class="c-small-label" for="name">{{label('lbl_nome')}}</label>
+                        <input pInputText type="text" name="name" formControlName="name" required [readonly]="editing">
+                    </span>
+                </div>
+                <div class="p-col-12">
+                    <span class="form-group">
+                        <label class="c-small-label" for="displayName">{{label('lbl_nome_exibicao')}}</label>
+                        <input pInputText type="text" name="displayName" formControlName="displayName" required>
+                    </span>
+                </div>
+                <div class="p-col-12">
+                    <span class="form-group">
+                        <label class="c-small-label" for="nameModuleSource">{{label('lbl_modulo_codigo_fonte')}}</label>
+                        <input pInputText type="text" name="nameModuleSource" formControlName="nameModuleSource"
+                            required>
+                    </span>
+                </div>
+                <div class="p-col-12">
+                    <span class="form-group">
+                        <label class="c-small-label" for="image">{{label('lbl_imagen')}}</label>
+                        <input pInputText type="text" name="image" formControlName="image" required>
+                    </span>
+                </div>
+                <div class="p-col-12">
+                    <span class="form-group">
+                        <label class="c-small-label" for="licence">{{label('lbl_identificador')}}</label>
+                        <input pInputText [class]="classReadonlyInput(true, 2)" type="text" name="licence"
+                            formControlName="licence" readonly>
+                    </span>
+                </div>
+                <div class="p-col-12">
+                    <span class="form-group">
+                        <label class="c-small-label" for="dateInitializer">{{label('lbl_data_inicializacao')}}</label>
+                        <input pInputText type="text" name="dateInitializer" [class]="classReadonlyInput(true, 2)"
+                            [readonly]="true"
+                            [ngModel]="formInput.get('dateInitializer').value | date:'dd/MM/yyyy HH:mm:ss'"
+                            [ngModelOptions]="{standalone: true}">
+                    </span>
+                </div>
+                <div class="p-col-12">
+                    <hr>
+                    <p-toolbar styleClass="c-tooblar-dialog">
+                        <div class="p-toolbar-group-left">
+                            <span style="padding-right: 10px;">
+                                <p-checkbox [label]="label('lbl_ativo')" name="status" formControlName="status"
+                                    binary="true">
+                                </p-checkbox>
+                            </span>
+
+                            <p-checkbox [label]="label('lbl_principal')" name="main" formControlName="main" binary="true">
+                            </p-checkbox>
+                        </div>
+                        <div class="p-toolbar-group-right">
+                            <button pButton class="p-button-sm" type="submit" pButton icon="fad fa-check-double"
+                                [label]="label('lbl_salvar')" [disabled]="!formInput.valid"></button>
+                            <button pButton class="p-button-sm c-color-back-red" type="button" pButton
+                                icon="fad fa-times" [label]="label('lbl_fechar')" (click)="hidenDialogInput()"></button>
+                        </div>
+                    </p-toolbar>
+                </div>
+            </div>
+        </form>
+    </p-dialog>
+
+</div>

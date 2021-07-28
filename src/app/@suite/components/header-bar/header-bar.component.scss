@@ -1,0 +1,135 @@
+.container-header {
+    margin: -0.63rem;
+    margin-top: -1rem;
+    background-color: #444;
+    height: 5.0rem;
+}
+
+.button-menu{
+    background-color: #444 !important;
+    border-color: #444 !important;
+    color: whitesmoke; 
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.label-sysname{
+    color: whitesmoke;
+    font-size: 2rem; 
+    margin-left: 1rem;
+}
+
+.button-menu:enabled:hover {
+    background: #444;
+    border-color: #444;
+    color: whitesmoke; 
+}
+
+.header-user-badge{
+    padding: 6px 7px 5px 7px;
+    background-color: #EEE;
+    color: #666;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 19px;
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+// Old
+
+.containerItensMegaMenu{
+  // float: left;
+  color:#EEE;
+  // background: #444;
+  width: 230px;
+  position: relative;
+}
+
+// .megaMenu{
+//   background: #444;
+//     color:#EEE;
+//     font-weight: normal;
+// }
+
+// .megaMenu h3{
+//   font-weight: normal;
+//   font-size: 16px;
+//   margin-top: 0px;
+// }
+
+// .megaMenu h4{
+//   font-weight: normal;
+//   font-size: 16px;
+//   margin-top: 0px;
+// }
+
+.megaMenu a{
+  color:#EEE;
+  // border-radius: 3px;
+  // background-color: #666;
+  padding: 5px;
+  text-decoration: none;
+}
+
+.megaMenu ul{
+    list-style: none;
+    padding: 0px;
+    margin-right: 10px;
+}
+
+.megaMenu li{
+  border-radius: 3px;
+  background-color: #666;
+  margin:5px 0px 5px 0px;
+  padding: 5px 0px 5px 0px;
+}
+
+.megaMenu i{
+  margin: 0px 12px 0px 10px;
+  width:15px;
+  text-align: center;
+}
+
+//New
+
+
+// Favorite menu
+// .megaMenuFavoritos{
+//   // color:#EEE;
+//   // font-weight: normal;
+//   // padding: 15px;
+// }
+
+.megaMenuFavoritos a{
+  color:#EEE;
+  // border-radius: 3px;
+  // background-color: #666;
+  padding: 5px;
+  text-decoration: none;
+}
+
+.megaMenuFavoritos ul{
+  list-style: none;
+  padding: 0px;
+  margin-right: 10px;
+}
+
+.megaMenuFavoritos li{
+  border-radius: 3px;
+  background-color: #666;
+  margin:5px 0px 5px 0px;
+  padding: 5px 0px 5px 0px;
+}
+
+.megaMenuFavoritos i{
+  margin: 0px 12px 0px 10px;
+  width:15px;
+  text-align: center;
+}
+
+.containerItensMegaMenuFavoritos{
+  // float: left;
+  width: 230px;
+  position: relative;
+}

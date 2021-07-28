@@ -1,0 +1,6 @@
+<p-dialog [header]="label('lbl_consulta_sql_tabela_d_d_o') +' '+ nameObject" modal="modal" [style]="{width: '700px'}"
+    [closable]="true" [(visible)]="displaySqlViewer" (onHide)="onHideDialog($event)">
+    <div ace-editor [text]="query" mode="sql" theme="eclipse" readOnly="true" [options]="options"
+        style="min-height: 400px; width:100%; overflow: auto">
+    </div>
+</p-dialog>

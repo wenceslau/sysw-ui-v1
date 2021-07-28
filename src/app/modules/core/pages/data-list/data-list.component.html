@@ -1,0 +1,145 @@
+<div class="c-container-page">
+    <app-user-action *ngIf="displayHistory" [inputModule]="'CORE'" [inputIdtRecord]="idRecord"
+        [inputNameObject]="nameObject" [inputDescription]="descriptionObject"
+        (hideComponentHistory)="hideComponentHistoryEvent($event)"></app-user-action>
+
+    <app-nav-bar [totalRecords]="totalRecords"></app-nav-bar>
+
+    <div class="c-container-page-containt" [style.height]="windowInnerHeightContainerPageContaint()">
+
+        <form autocomplete="off" #f="ngForm">
+            <div class="p-grid p-justify-rigth c-div-toolbar-filter">
+                <div class="p-col-fixed">
+                    <button pButton type="button" class="c-button-toolbar c-color-blue"
+                        icon="fad fa-plus-circle c-button-icon-size" tooltipPosition="right"
+                        [pTooltip]="label('lbl_novo_registro')" (click)="showDialogInput(null)"
+                        [disabled]="canDisable('CORE_DATA_LIST_INSERT') || selectedDataList == null"></button>
+                </div>
+                <div class="p-col-3 p-fluid">
+                    <span class="ui-float-label">
+                        <p-dropdown ngModel #lista name="lista" optionLabel="name"
+                            [placeholder]="label('lbl_selecione_uma_lista_d_d')" [options]="listaDataList"
+                            [showClear]="true" [(ngModel)]="selectedDataList" (onChange)="onChangeLista()">
+                        </p-dropdown>
+                    </span>
+                </div>
+                <div class="p-col-8 p-fluid">
+                    <div style="padding-top: 1rem; font-weight: bold;">
+                        <label>{{selectedDataList?.description}}</label>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <hr>
+        <div class="p-grid">
+            <div class="p-col">
+
+                <p-table #table styleClass="p-datatable-sm" selectionMode="single" [(selection)]="selectedRowMainTable"
+                    [value]="listaItemDataList" [responsive]="true" [paginator]="paginator" [rows]="rows"
+                    [scrollable]="true" [scrollHeight]="scrollHeightTabl">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th class="grid-col-id" style="width: 45px">ID</th>
+                            <th>{{label('lbl_grupo')}} </th>
+                            <th>{{label('lbl_rotulo')}}</th>
+                            <th>{{label('lbl_valor')}} </th>
+                            <th>{{label('lbl_descricao')}}</th>
+                            <th class="grid-col-status">Status</th>
+                            <th class="grid-col-action-2b"></th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-item>
+                        <tr [pSelectableRow]="item">
+                            <td [class]="classRowInactive('grid-col-id',item.status)">
+                                {{item.code}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',item.status)" style="width: 25%">
+                                {{item.group}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',item.status)" style="width: 25%">
+                                {{item.labelItem}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',item.status)" style="width: 25%">
+                                {{item.valueItem}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',item.status)" style="width: 25%">
+                                {{item.description}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-status',item.status)">
+                                {{item.status ? 'Ativo' : 'Inativo'}}
+                            </td>
+                            <td class="grid-col-action-2b">
+                                <button class="c-button-grid c-color-green" pButton icon="fad fa-pencil"
+                                    [pTooltip]="label('lbl_editar')" tooltipPosition="top"
+                                    (click)="showDialogInput(item.code)"
+                                    [disabled]="canDisable('CORE_DATA_LIST_UPDATE')">
+                                </button>
+                                <button class="c-button-grid c-color-blue" pButton icon="fad fa-indent"
+                                    [pTooltip]="label('lbl_historico')" tooltipPosition="top"
+                                    (click)="showComponentHistory(item, item.code, item.labelItem, 'ItemDataList')">
+                                </button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+
+            </div>
+            <div class="p-col-fixed" style="width:163px">
+
+                <app-info-model [inputModule]="'CORE'" [inputTotalRecords]="totalRecords" [inputEntity]="'ListaItem'">
+                </app-info-model>
+
+            </div>
+        </div>
+    </div>
+
+    <p-dialog modal="modal" [header]="handler.share.navigation" [responsive]="true" [closable]="true"
+        [style]="{width: '600px'}" [(visible)]="displayInput">
+        <form autocomplete="off" (ngSubmit)="saveLista()" [formGroup]="formInput">
+            <div class="p-grid p-fluid">
+                <div class="p-col-12">
+                    <span class="form-group">
+                        <label class="c-small-label" for="group">{{label('lbl_grupo')}}</label>
+                        <input pInputText type="text" name="group" formControlName="group">
+                    </span>
+                </div>
+                <div class="p-col-12">
+                    <span class="form-group">
+                        <label class="c-small-label" for="labelItem">{{label('lbl_rotulo')}}</label>
+                        <input pInputText required type="text" name="labelItem" formControlName="labelItem">
+                    </span>
+                </div>
+                <div class="p-col-12">
+                    <span class="form-group">
+                        <label class="c-small-label" for="valueItem">{{label('lbl_valor')}}</label>
+                        <input pInputText required type="text" name="valueItem" formControlName="valueItem">
+                    </span>
+                </div>
+                <div class="p-col-12">
+                    <span class="form-group">
+                        <label class="c-small-label" for="description">{{label('lbl_descricao')}}</label>
+                        <input pInputText type="text" name="description" formControlName="description">
+                    </span>
+                </div>
+                <div class="p-col-12">
+                    <hr>
+                    <p-toolbar styleClass="c-tooblar-dialog">
+                        <div class="p-toolbar-group-left">
+                            <p-checkbox [label]="label('lbl_ativo')" name="status" formControlName="status"
+                                binary="true">
+                            </p-checkbox>
+                        </div>
+                        <div class="p-toolbar-group-right">
+                            <button pButton class="p-button-sm" type="submit" pButton icon="fad fa-check-double"
+                                [label]="label('lbl_salvar')" [disabled]="!formInput.valid"></button>
+                            <button pButton class="p-button-sm c-color-back-red" type="button" pButton
+                                icon="fad fa-times" [label]="label('lbl_fechar')" (click)="hidenDialogInput()"></button>
+                        </div>
+                    </p-toolbar>
+                </div>
+            </div>
+        </form>
+    </p-dialog>
+
+</div>

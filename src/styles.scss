@@ -1,0 +1,424 @@
+@import "variables.scss";
+
+/* You can add global styles to this file, and also import other style files */
+
+
+
+/* Sobreposicao de style themw componetes primeng sysmonkey-v4 */
+.p-inputtext{
+  background-color: $c-component-input-background-color !important;
+}
+
+.p-dropdown .p-dropdown-trigger {
+  background-color: $c-component-input-background-color !important;
+}
+
+/* Sobreposicao componete automcomplete primeng */
+
+.p-autocomplete-dd .p-autocomplete-dropdown {
+  background-color: $c-component-input-background-color !important;
+  color: $c-text-color !important;
+  border: 1px solid #d3dbe3  !important;
+  border-left: none  !important;
+  box-shadow: none !important;
+}
+
+.p-autocomplete-dd .p-autocomplete-input:enabled:hover { 
+  border-color: #d3dbe3;
+}
+
+.p-autocomplete-dd .p-autocomplete-input:enabled:focus {
+  box-shadow: none; 
+  border-color: #d3dbe3;
+}
+
+.p-autocomplete-dd .p-autocomplete-input{
+  border-right: none  !important;
+}
+
+.p-datatable .p-paginator-bottom {
+  padding-top: 3px;
+  padding-bottom: 0px;
+}
+
+/* --------------------------------------------------*/
+
+.p-multiselect-label-container{
+  background-color: $c-component-input-background-color !important;
+  border-radius: 6px !important;
+}
+
+.p-multiselect .p-multiselect-trigger {
+  background-color: $c-component-input-background-color !important;
+}
+
+.p-toolbar {
+  background: transparent !important;
+  border-color: transparent !important;
+}
+
+.p-dialog .p-dialog-content {
+  height: 100% !important;
+}
+
+.p-checkbox .p-checkbox-box {
+  width: 19px !important;
+  height: 19px !important;
+  border-radius: 5px !important;
+
+}
+
+.p-button {
+  background: $c-primary-color !important;
+  border: 1px solid $c-primary-color !important;
+}
+
+// .p-toast .p-toast-message.p-toast-message-info {
+//   background: rgb(179, 229, 252) !important;
+//   border: solid rgb(8, 145, 207) !important;
+//   border-width: 0 0 0 6px !important;
+//   color: rgb(4, 72, 104) !important;
+// }
+
+// .p-toast .p-toast-message.p-toast-message-info .p-toast-message-icon, .p-toast .p-toast-message.p-toast-message-info .p-toast-icon-close {
+//   color: $c-primary-color !important;
+// }
+
+// .p-overlaypanel .p-overlaypanel-content {
+//   padding: 1.25rem;
+//   background: #eff3f8 !important;
+// }
+
+
+/* ----------------Style do scrollbar em todo sistema---------------- */
+
+::-webkit-scrollbar { /* width */
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-track { /* Track */
+  box-shadow: inset 0 0 25px #eff3f8 ; 
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb { /* Handle */
+  background: #9FB5D5; 
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover { /* Handle on hover */
+  background: $c-primary-color; 
+}
+
+/* ------------------Base das tabelas que tem o scrollbar -----------------*/
+
+.p-datatable-scrollable-body.ng-star-inserted{
+  background: #eff3f8 !important;
+}
+.p-datatable-scrollable-wrapper.ng-star-inserted{
+  background: #eff3f8 !important;
+}
+
+/* Sobreposicao de style componetes html sysmonkey-v4 */
+
+body{
+  overflow: hidden;
+}
+
+html {
+  font-size: 12px;
+}
+
+hr{
+  height: 1px;
+  background-color: #ccc;
+  border: none;
+  margin-bottom: 7px;
+  margin-top: 0px;
+}
+
+label{
+  font-family: Roboto, Helvetica, sans-serif
+}
+
+button {
+  margin-right: .25em !important;
+  box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12) !important;
+
+}
+
+textarea {
+  resize: none;
+}
+
+/* Style sysmonkey html sysmonkey-v4 */
+
+//Painel para uso de blockpanel
+.c-p-panel.p-panel {
+  .p-panel-content {
+    padding: 0rem;
+    border: 0px;
+    background: transparent  !important;
+    //color: transparent  !important;
+    border-bottom-right-radius: 0px !important;
+    border-bottom-left-radius: 0px !important;
+    border-top: 0 none;  
+    border-radius: 6px;
+  }
+}
+
+.c-container-page{
+padding-left: 3.9rem;
+}
+
+.c-container-page-containt{
+  padding-left: 1.5rem;
+  padding-right: 1rem;
+  overflow-x: hidden;
+}
+
+
+/* button sysmonkey-v4 */
+
+.c-button-header{
+  border: 1px solid #666 !important;;            
+  background: #666 !important;;
+  color:#FFF !important;
+  width: 34px !important;
+  height: 33px !important;
+}
+
+
+.c-button-toolbar{
+  background-color: $c-component-background-color !important;
+  border-color: #Eff3f8 !important;
+  width: 33px !important;
+  height: 32px !important;
+}
+.c-button-toolbar-with-label{
+  background-color: $c-component-background-color !important;
+  border-color: #Eff3f8 !important;
+  height: 32px !important;
+}
+
+.c-button-card-size{
+  width: 32px !important;
+  height: 31px !important;
+}
+
+.c-button-toolbar-label{
+  background-color: $c-component-background-color !important;
+  border-color: #Eff3f8 !important;
+  height: 32px !important;
+}
+
+.c-button-icon-size{
+  font-size: 1.27rem;
+}
+
+.c-primary-color{
+  color: $c-primary-color;
+}
+
+.c-color-red{
+  color:darkred !important;
+}
+
+.c-color-back-red{
+  background-color:#8B0000 !important;
+  border: #8B0000 !important;
+}
+
+.c-color-back-transp{
+  background: transparent !important; 
+}
+
+.c-color-yellow{
+    color: goldenrod !important;
+}
+
+.c-color-lightgray{
+  color: lightgray !important;
+}
+
+.c-color-transparent{
+  color: lightsteelblue !important;
+}
+
+.c-color-green{
+  color: $c-inverse-primary-color !important;
+}
+
+.c-color-dark-green{
+  color:#004d00 !important;
+}
+
+.c-color-black{
+  color:black !important;
+}
+
+.c-color-blue{
+  color: $c-primary-color !important;
+}
+
+.c-button-grid{
+  width: 2.1rem !important;
+  height: 2.0rem !important;
+  background-color: $c-component-background-color !important;
+  border-color: #Eff3f8 !important;
+}
+
+.c-button-traparent{
+  width: 28px !important;
+  height: 28px !important;
+  background-color: $c-component-background-color !important;
+  border-color: #Eff3f8 !important;
+}
+
+.c-small-label {
+  font-size: 0.9rem;
+  color: $c-text-color;
+}
+
+.c-medium-label {
+  font-size: 1.1rem;
+  color: $c-text-color;
+}
+
+.grid-col-id{
+  width: 45px;
+  text-align: center !important;
+}
+
+.grid-col-status{
+  width: 4.2rem;
+  text-align: center !important;
+}
+
+.grid-col-boolean-2x{
+  width: 7.6rem;
+  text-align: center !important;
+}
+
+.grid-col-boolean-3x{
+  width: 9rem;
+  text-align: center !important;
+}
+
+.grid-col-action-1b{
+  width: 5.3rem;
+  text-align: center !important;
+}
+
+.grid-col-action-2b{
+  width: 6.6rem;
+  text-align: right !important;
+}
+
+.grid-col-action-3b{
+  width: 9rem;
+  text-align: center !important;
+}
+
+.grid-col-action-4b{
+  width: 12rem;
+  text-align: right !important;
+}
+
+.grid-col-action-frozen{
+  width: 12rem !important;
+  text-align: center !important;
+}
+
+.grid-col-action-8b{
+  width: 21rem;
+  text-align: right !important;
+}
+
+.grid-col-string {
+  text-align: left;
+  font-weight: normal;
+  text-overflow: ellipsis;
+  overflow: hidden; 
+  white-space: nowrap;
+}
+
+.grid-col-string:hover{
+  overflow: visible; 
+  word-wrap: break-word;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.c-grid-row-inactive {
+  font-style: italic !important;
+  color: red !important;
+}
+
+.c-grid-row-end-validity {
+  font-style: italic;
+  color: #004A95;
+}
+
+.c-grid-row-link-Inactive {
+  color: red !important;
+  font-style: italic
+}
+
+.c-div-scrollpanel {
+  max-height: 250px;
+}
+
+.c-scrollpanel-content {
+  background: #eff3f8;
+}
+
+.c-div-toolbar-filter{
+  padding: 5px 0px 0px 10px
+}
+
+.disableInput {
+  background-color:  $c-component-background-color !important;
+}
+
+.readonlyInput{
+  font-style: italic;
+}
+
+.label-no-wrap{
+  white-space: nowrap;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  margin-bottom: -2px
+}
+
+
+
+/*
+ *  STYLE 7
+ */
+
+ #style-7::-webkit-scrollbar-track
+ {
+   -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+   background-color: #F5F5F5;
+   border-radius: 10px;
+ }
+ 
+ #style-7::-webkit-scrollbar
+ {
+   width: 10px;
+   background-color: #F5F5F5;
+ }
+ 
+ #style-7::-webkit-scrollbar-thumb
+ {
+   border-radius: 10px;
+   background-image: -webkit-gradient(linear,
+                      left bottom,
+                      left top,
+                      color-stop(0.44, rgb(122,153,217)),
+                      color-stop(0.72, rgb(73,125,189)),
+                      color-stop(0.86, rgb(28,58,148)));
+ }
+ 

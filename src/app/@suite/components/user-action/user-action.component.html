@@ -1,0 +1,49 @@
+<p-dialog modal="modal" [header]="label('lbl_historico_registros') +':  '+ inputIdtRecord +'   '+inputDescription+''"
+    [style]="{width: '1080px', height: '565px'}" [(visible)]="display" [closable]="true"
+    (onHide)="onHideDialog($event)">
+
+    <hr>
+    <div class="p-grid">
+        <div class="p-col-5">
+            <p-table #History selectionMode="single" [value]="userActions" [responsive]="true" [paginator]="true"
+                [rows]="rowsPerPage" [lazy]="true" [totalRecords]="totalRecordsUserAction" [(selection)]="selectedUserAction"
+                (onLazyLoad)="onChangePageAction($event)" (onRowSelect)="onRowSelect($event)">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th class="col-string-header" style="width: 15%">{{label('lbl_acao')}}</th>
+                        <th class="col-string-header" style="width: 50%">{{label('lbl_usuario')}}</th>
+                        <th class="col-string-header" style="width: 35%">{{label('lbl_data_alteracao')}}</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-action>
+                    <tr [pSelectableRow]="action">
+                        <td class="col-string">{{action.action}}</td>
+                        <td class="col-string">{{action.userRecord?.name}}</td>
+                        <td class="col-string">{{action.dateRecord | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+        <div class="p-col-fixed" style="width: 2px;">
+            <hr style="height: 100%;">
+        </div>
+        <div class="p-col">
+            <p-table #History [value]="jsonObject" [responsive]="true" [scrollable]="true" scrollHeight="420px">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th class="col-string-header" style="width: 30%">{{label('lbl_coluna')}}</th>
+                        <th class="col-string-header" style="width: 70%">{{label('lbl_valor')}}</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-json>
+                    <tr>
+                        <td class="col-string" style="width: 30%"><div class="label-no-wrap">{{json.column}}</div></td>
+                        <td class="col-string" style="width: 70%">{{json.value}}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+    </div>
+
+</p-dialog>

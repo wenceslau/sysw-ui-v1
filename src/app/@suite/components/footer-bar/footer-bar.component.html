@@ -1,0 +1,28 @@
+<div class="container-footer">
+
+    <p-toolbar styleClass="c-p-toolbar">
+        <div class="p-toolbar-group-left">
+            <span style="padding-left: 10px; padding-right: 10px;">
+                <img *ngIf="handler.share.language == 'PT'" src="assets/flg-pt.png" width="11px">
+                <img *ngIf="handler.share.language == 'EN'" src="assets/flg-en.png" width="11px">
+                <img *ngIf="handler.share.language == 'ES'" src="assets/flg-es.png" width="11px">
+            </span>
+            <span style="font-size: 12px; color: whitesmoke;">
+                <!-- a ? se chama operador elves e evita o erro de nullpointer -->
+                <label>{{label('lbl_versao')}} API: {{ handler.share.infoSystem?.version}}, UI: {{ version }}</label>
+            </span>
+            <span style="font-size: 12px;padding-left: 5px;  color: whitesmoke;">
+                <label> </label>
+            </span>
+            <span style="font-size: 9px; padding-left: 5px; color: whitesmoke;">
+                <label> {{ handler.share.innerHeight}} {{handler.share.rows}}</label>
+            </span>
+        </div>
+        <div class="p-toolbar-group-right">
+            <span style="padding-right: 5px;">
+                <img src="assets/home_footer.png" width="105px">
+            </span>
+        </div>
+    </p-toolbar>
+
+</div>

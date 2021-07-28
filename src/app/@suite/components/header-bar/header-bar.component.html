@@ -1,0 +1,158 @@
+<div class="container-header">
+    <p-toolbar>
+        <div class="p-toolbar-group-left">
+            <button pButton *ngIf="isRouterLogged" class="button-menu" type="button" icon="fad fa-bars fa-2x"
+                (click)="megaMenuPanel.toggle($event)">
+            </button>
+            <label class="label-sysname">{{handler.share.infoSystem?.application}}</label>
+        </div>
+        <div class="p-toolbar-group-right">
+            <a *ngIf="!isRouterLogged" href="http://www.sysmonkey.com.br" target="_blank">
+                <img style="padding-top: 5px;" src="assets/login_header.png" width="150rem">
+            </a>
+            <p-dropdown ngModel *ngIf="isRouterLogged" name="sector" optionLabel="name"
+                [placeholder]="label('lbl_setor')" [options]="handler.share.sectors" [style]="{width: '210px'}"
+                [panelStyle]="{width: '210px'}" [(ngModel)]="handler.share.sector" (onChange)="onChangeSector($event)">
+            </p-dropdown>
+            <div *ngIf="isRouterLogged" class="header-user-badge" (mouseover)="opUser.show($event)">
+                {{ userBadge}}
+            </div>
+            <span *ngIf="isRouterLogged" class="p-overlay-badge">
+                <button *ngIf="isRouterLogged" pButton class="c-button-header p-button-raised" tooltipPosition="top"
+                    icon="fad fa-comment-edit c-button-icon-size" [pTooltip]="label('lbl_notificacoes')"
+                    (click)="showNotify()" [disabled]="!handler.share.receiveNotify">
+                </button>
+                <span *ngIf="numberNotify() > 0" style="z-index: 1;" class="p-badge p-badge-warning">{{numberNotify()}}
+                </span>
+            </span>
+            <button *ngIf="isRouterLogged" pButton class="c-button-header  p-button-raised"
+                icon="fad fa-lock c-button-icon-size" tooltipPosition="top" [pTooltip]="label('lbl_alterar_senha')"
+                [disabled]="canDisable('CORE_PASSWORD_CHANGE')" (click)="showDialogChangePass()">
+            </button>
+            <button *ngIf="isRouterLogged" pButton class="c-button-header  p-button-raised"
+                icon="fad fa-sign-out-alt c-button-icon-size" tooltipPosition="top" [pTooltip]="label('lbl_sair')"
+                (click)="logout()">
+            </button>
+
+        </div>
+    </p-toolbar>
+</div>
+<app-menu-bar *ngIf="isRouterLogged"></app-menu-bar>
+
+<app-footer-bar *ngIf="isRouterLogged"></app-footer-bar>
+
+<p-overlayPanel #megaMenuPanel [dismissable]="true" baseZIndex="1"
+    [style]="{'background-color':'#444','border':'0','padding':'0px','width':'auto'}">
+    <ng-template pTemplate>
+        <div class="megaMenu">
+            <ng-template ngFor let-itemMain [ngForOf]="handler.share.itensMegaMenu">
+                <div class="containerItensMegaMenu">
+                    <label style="font-size: 1.1rem; font-weight: bold;">{{itemMain.label}}</label>
+                    <ul>
+                        <ng-template ngFor let-item [ngForOf]="itemMain.items">
+                            <li>
+                                <a [routerLink]="item.routerLink" href="#"
+                                    (click)="handler.share.navigation = item.label; handler.share.navigationIcon = item.icon;  megaMenuPanel.hide()">
+                                    <i [class]="item.icon"></i>
+                                    {{item.label}}
+                                </a>
+                            </li>
+                        </ng-template>
+                    </ul>
+                </div>
+            </ng-template>
+        </div>
+    </ng-template>
+</p-overlayPanel>
+
+<p-overlayPanel #opUser styleClass="c-custom-overlaypanel" >
+    <div class="userProfile">
+        <div>
+            <label>{{ handler.share.auth.jwtPayload?.displayName}}</label>
+        </div>
+        <div class="right profileSize">
+            <label> {{label('lbl_perfil')}}: {{ handler.share.auth.jwtPayload?.profile}}</label>
+        </div>
+    </div>
+</p-overlayPanel>
+
+<p-dialog [header]="label('lbl_informe_sua_senha')" modal="modal" [style]="{width: '300px'}" [closable]="true"
+    [showHeader]="true" [(visible)]="displayAuthenticator" (onHide)="onHideDialog($event)">
+    <form autocomplete="on" #f1="ngForm">
+
+        <div class="p-grid p-fluid">
+            <div class="p-col-12">
+                <div class="ui-inputgroup">
+                    <input pInputText readonly ngModel #usuario type="text" name="username"
+                        [placeholder]="label('lbl_usuario')" [ngModel]=' currentUsername'>
+                </div>
+            </div>
+
+            <div class="p-col-12">
+                <div class="ui-inputgroup">
+                    <input pInputText required ngModel #senha type="password" name="pasword"
+                        [placeholder]="label('lbl_senha')">
+                </div>
+            </div>
+
+            <div class="p-col-12">
+                <p-checkbox [label]="label('lbl_manter_autenticado') + '**'" binary="true"
+                    [ngModelOptions]="{standalone: true}" [(ngModel)]="handler.share.saveValue">
+                </p-checkbox>
+            </div>
+
+            <div class="p-col-12">
+                <button pButton id="btnLogin" type="submit" [label]="label('lbl_autenticar')" [disabled]="!f1.valid"
+                    (click)="login(senha.value); senha.value = ''">
+                </button>
+                <p-messages [(value)]="handler.messageBotton" [closable]="false" severity="warn"></p-messages>
+            </div>
+            <div class="p-col-12" style="font-size: 11px;">
+                <span>
+                    <label> ** {{label('lbl_a_senha_sera_s_a_n_s')}}</label>
+                </span>
+            </div>
+        </div>
+    </form>
+</p-dialog>
+
+<p-dialog [header]="label('lbl_alterar_senha')" [style]="{width: '250px'}" [closable]="false" [showHeader]="true"
+    [(visible)]="displayChangePass" modal="modal">
+    <form autocomplete="off" #f="ngForm">
+
+        <div class="p-grid p-fluid">
+
+            <div class="p-col-12">
+                <input pInputText type="password" name="oldp" [placeholder]="label('lbl_senha_atual')" required ngModel
+                    #oldp>
+            </div>
+            <div class="p-col-12">
+                <input pInputText type="password" name="newp" [placeholder]="label('lbl_nova_senha')" required ngModel
+                    #newp>
+            </div>
+            <div class="p-col-12">
+                <input pInputText type="password" name="conf" [placeholder]="label('lbl_confirmar_senha')" required
+                    ngModel #conf>
+            </div>
+            <div class="p-col-12">
+                <button pButton class="p-button-sm" type="submit" [label]="label('lbl_alterar')" [disabled]="!f.valid"
+                    (click)="change(oldp.value, newp.value, conf.value); f.reset()"></button>
+            </div>
+            <div class="p-col-12">
+                <button pButton class="p-button-sm c-color-back-red" type="submit" [label]="label('lbl_fechar')"
+                    (click)="displayChangePass = false; f.reset()"></button>
+            </div>
+        </div>
+
+    </form>
+</p-dialog>
+
+<p-dialog [header]="label('lbl_notificacoes')" [closable]="true" [showHeader]="true" [(visible)]="displayNotify"
+    modal="modal" [style]="{width: '1000px'}">
+    <div>
+        <app-notification *ngIf="displayNotify" scrollHeight="300px"></app-notification>
+    </div>
+    <hr>
+    <p-checkbox [label]="label('lbl_silenciar_notificacoes')" binary="true" [(ngModel)]="handler.share.silenceNotify">
+    </p-checkbox>
+</p-dialog>

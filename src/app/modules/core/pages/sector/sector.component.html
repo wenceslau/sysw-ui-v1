@@ -1,0 +1,206 @@
+<div class="c-container-page">
+
+    <app-user-action *ngIf="displayHistory" [inputModule]="'CORE'" [inputIdtRecord]="idRecord"
+        [inputNameObject]="nameObject" [inputDescription]="descriptionObject"
+        (hideComponentHistory)="hideComponentHistoryEvent($event)"></app-user-action>
+
+    <app-nav-bar [totalRecords]="totalRecords"></app-nav-bar>
+
+    <div class="c-container-page-containt" [style.height]="windowInnerHeightContainerPageContaint()">
+
+        <form autocomplete="off" (ngSubmit)="filter()" [formGroup]="formFilter">
+            <div class="p-grid p-justify-rigth c-div-toolbar-filter">
+                <div class="p-col-fixed">
+                    <button pButton type="button" class="c-button-toolbar c-color-blue"
+                        icon="fad fa-plus-circle c-button-icon-size" [pTooltip]="label('lbl_novo_registro')"
+                        tooltipPosition="right" (click)="showDialogInput(null)"
+                        [disabled]="canDisable('CORE_SECTOR_INSERT')">
+                    </button>
+                    <button pButton type="button" class="c-button-toolbar c-color-green"
+                        icon="fad fa-sync c-button-icon-size" [pTooltip]="label('lbl_atualizacao_de_tela')"
+                        tooltipPosition="right" (click)="listAll()">
+                    </button>
+                    <button pButton type="button" class="c-button-toolbar c-color-red"
+                        icon="fad fa-eraser c-button-icon-size" [pTooltip]="label('lbl_limpar_filtros')"
+                        tooltipPosition="right" (click)="clearFilter()">
+                    </button>
+                    <button pButton type="submit" icon="fad fa-filter" style="display: none;">
+                    </button>
+                </div>
+                <div class="p-col p-fluid">
+                    <span class="form-group">
+                        <input pInputText type="text" name="name" [placeholder]="label('lbl_pesquisar_por_nome')"
+                            formControlName="name">
+                    </span>
+                </div>
+                <div class="p-col p-fluid">
+                    <span class="ui-float-label form-group">
+                        <p-dropdown *ngIf="false" name="status" [options]="status" formControlName="status"
+                            [placeholder]="label('lbl_pesquisar_por_status')" [showClear]="true" (onChange)="filter()">
+                        </p-dropdown>
+                    </span>
+                </div>
+            </div>
+        </form>
+
+        <hr>
+
+        <div class="p-grid">
+            <div class="p-col">
+
+                <p-table #table styleClass="p-datatable-sm" selectionMode="single" [(selection)]="selectedRowMainTable"
+                    [value]="sectors" [responsive]="true" [paginator]="paginator" [rows]="rows">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th class="grid-col-id">ID</th>
+                            <th *ngIf="isDefaultSector">{{label('lbl_unidade_de_negocio')}} </th>
+                            <th style="width: 15%">{{label('lbl_nome')}}</th>
+                            <th>{{label('lbl_descricao')}}</th>
+                            <th>{{label('lbl_servico_de_dados')}}</th>
+                            <th>{{label('lbl_nome_base_de_d')}}</th>
+                            <th class="grid-col-status">Status</th>
+                            <th class="grid-col-action-2b"></th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-sector>
+                        <tr [pSelectableRow]="sector">
+                            <td [class]="classRowInactive('grid-col-id',sector.status)">
+                                {{sector.code}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',sector.status)" *ngIf="isDefaultSector">
+                                {{sector.businessUnit.name}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',sector.status)">
+                                {{sector.name}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',sector.status)">
+                                {{sector.description}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',sector.status)">
+                                {{sector.dataService?.name}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',sector.status)">
+                                {{sector.nameExternalDatabase}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-status',sector.status)">
+                                {{sector.status ? label('lbl_ativo') : label('lbl_inativo')}}
+                            </td>
+                            <td class="grid-col-action-2b">
+                                <button pButton class="c-button-grid c-color-green" icon="fad fa-pencil"
+                                    [pTooltip]="label('lbl_editar')" tooltipPosition="top"
+                                    (click)="showDialogInput(sector.code)"
+                                    [disabled]="canDisable('CORE_SECTOR_UPDATE')">
+                                </button>
+                                <button pButton class="c-button-grid c-color-blue" icon="fad fa-indent"
+                                    [pTooltip]="label('lbl_historico')" tooltipPosition="left"
+                                    (click)="showComponentHistory(sector, sector.code, sector.name, 'Sector')">
+                                </button>
+                            </td>
+
+                        </tr>
+                    </ng-template>
+                </p-table>
+
+            </div>
+            <div class="p-col-fixed" style="width:163px">
+                <app-info-model [inputModule]="'CORE'" [inputTotalRecords]="totalRecords" [inputEntity]="'Sector'">
+                </app-info-model>
+            </div>
+        </div>
+
+        <p-dialog modal="modal" [header]="handler.share.navigation" [responsive]="true" [closable]="true"
+            [style]="{width: '600px'}" [(visible)]="displayInput">
+            <form autocomplete="off" (ngSubmit)="saveSector()" [formGroup]="formInput">
+                <div class="p-grid">
+                    <div class="p-col-12 p-fluid" *ngIf="isDefaultSector">
+                        <span class="form-group">
+                            <label class="c-small-label" for="businessUnit">{{label('lbl_unidade_de_negocio')}}</label>
+                            <p-dropdown required [class]="classReadonlyDropdow(editingSector)" name="businessUnit"
+                                appendTo="body" [options]="resumeBusinessUnities" optionLabel="name"
+                                formControlName="businessUnit" placeholder="." [readonly]="editingSector"
+                                (onChange)="onChangeBusinessUnit()"></p-dropdown>
+                        </span>
+                    </div>
+                    <div class="p-col-12 p-fluid">
+                        <span class="form-group">
+                            <label class="c-small-label" for="businessUnit">{{label('lbl_aplicacao')}}</label>
+                            <p-dropdown required id="dpdApps" name="application" appendTo="body" placeholder="."
+                                optionLabel="name" formControlName="application" [readonly]="readonlyDataService"
+                                [options]="resumeApplications" [class]="classReadonlyDropdow(readonlyDataService)"
+                                (onChange)="onChangeApplication()">
+                            </p-dropdown>
+                        </span>
+                    </div>
+
+                    <div class="p-col-12 p-fluid">
+                        <span class="form-group">
+                            <label class="c-small-label" for="name">{{label('lbl_nome')}}</label>
+                            <input id="txtName" pInputText type="text" name="name" formControlName="name" maxlength='25'
+                                required>
+                        </span>
+                    </div>
+
+                    <div class="p-col-12 p-fluid">
+                        <span class="form-group">
+                            <label class="c-small-label" for="description">{{label('lbl_descricao')}}</label>
+                            <input id="txtDescription" pInputText type="text" name="description"
+                                formControlName="description" required>
+                        </span>
+                    </div>
+                    <div class="p-col-12 p-fluid">
+                        <span class="form-group">
+                            <label class="c-small-label" for="uniqueId">{{label('lbl_identificador')}}</label>
+                            <input pInputText [class]="classReadonlyInput(true, 2)" type="text" name="uniqueId"
+                                formControlName="uniqueId" readonly>
+                        </span>
+                    </div>
+                    <div class="p-col-12 p-fluid" *ngIf="sectorRequiredDb">
+                        <span class="form-group">
+                            <label class="c-small-label" for="dataService">{{label('lbl_servico_de_dados')}}</label>
+                            <p-dropdown id="dpdDataServices" [class]="classReadonlyDropdow(readonlyDataService)"
+                                name="dataService" [options]="resumeDataServices" [readonly]="readonlyDataService"
+                                optionLabel="name" formControlName="dataService" appendTo="body" placeholder="."
+                                required></p-dropdown>
+                        </span>
+                    </div>
+                    <div class="p-col-6 p-fluid" *ngIf="sectorRequiredDb">
+                        <span class="form-group">
+                            <label class="c-small-label"
+                                for="nameExternalDatabase">{{label('lbl_nome_base_de_d')}}</label>
+                            <input [class]="classReadonlyInput(readonlyNameDatabase, 1)" pInputText type="text"
+                                name="nameExternalDatabase" formControlName="nameExternalDatabase"
+                                [readonly]="readonlyNameDatabase">
+                        </span>
+                    </div>
+                    <div class="p-col-6 p-fluid" *ngIf="sectorRequiredDb">
+                        <span class="form-group">
+                            <label class="c-small-label"
+                                for="dateCreateDatabase">{{label('lbl_data_criacao_base_d_d')}}</label>
+                            <input [class]="classReadonlyInput(true, 2)" pInputText type="text"
+                                name="dateCreateDatabase" [readonly]="true" [ngModelOptions]="{standalone: true}"
+                                [ngModel]="formInput.get('dateCreateDatabase').value | date:'dd/MM/yyyy HH:mm:ss'">
+                        </span>
+                    </div>
+                    <div class="p-col-12">
+                        <hr>
+                        <p-toolbar styleClass="c-tooblar-dialog">
+                            <div class="p-toolbar-group-left">
+                                <p-checkbox [label]="label('lbl_ativo')" name="status" formControlName="status"
+                                    binary="true">
+                                </p-checkbox>
+                            </div>
+                            <div class="p-toolbar-group-right">
+                                <button pButton class="p-button-sm" type="submit" pButton icon="fad fa-check-double"
+                                    [label]="label('lbl_salvar')" [disabled]="!formInput.valid"></button>
+                                <button pButton class="p-button-sm c-color-back-red" type="button" icon="fad fa-times"
+                                    [label]="label('lbl_fechar')" (click)="hidenDialogInput()"></button>
+                            </div>
+                        </p-toolbar>
+                    </div>
+                </div>
+            </form>
+        </p-dialog>
+
+    </div>
+
+</div>

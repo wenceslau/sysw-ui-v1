@@ -1,0 +1,363 @@
+<!-- Home SysMonkey -->
+<div *ngIf="showHome('SYSMONKEY')" class="p-grid">
+    <div class="p-col-9">
+        <div style="margin-top: -15px;" [style.overflow-x]="'hidden'" [style.height]="windowInnerHeightSroll()">
+            <div class="card" [style.height]="windowInnerHeight()">
+                <p-dataView #dvCards [value]="products" filterBy="title" [sortField]="sortField" [sortOrder]="sortOrder"
+                    layout="grid">
+                    <ng-template pTemplate="header">
+                        <div style="margin: -15px;" class="p-grid">
+                            <div class="p-col-4 p-fluid">
+                                <span class="p-input-icon-left p-mb-2 p-mb-md-0">
+                                    <i class="pi pi-search"></i>
+                                    <input type="search" pInputText placeholder="Search by Name"
+                                        (input)="dv.filter($event.target.value)">
+                                </span>
+                            </div>
+                            <div style="margin-top: 6px; " class="p-col-6 p-fluid">
+                                <a href="javascript:;" (click)="filterFavorite()">
+                                    <i [class]="iconFilterCards"></i>
+                                </a>
+                            </div>
+                            <div style="margin-top: 2px; padding-right: 15px; text-align: right;" class="p-col-2">
+                                <!-- <a href="javascript:;" (click)="newObjeto()">
+                                    <i [pTooltip]="label('lbl_novo_objeto')" tooltipPosition="right"
+                                        class="fad fa-plus-circle  fa-2x c-color-transparent"></i>
+                                </a> -->
+                                <button pButton class="p-button-sm" type="button"
+                                    style="width: 104px; padding-left: 8px; padding-right: 8px;"
+                                    icon="fad fa-plus-circle" [label]="label('lbl_novo_objeto')"
+                                    (click)="newObjeto()"></button>
+                            </div>
+                        </div>
+                    </ng-template>
+                    <ng-template let-product pTemplate="gridItem">
+                        <div class="p-col-12 p-md-2" style="max-width: 250px">
+                            <div class="product-grid-item card" [style.background-color]="colorCard(product)" #EFF3F8>
+                                <a href="javascript:;" (click)="click1(product);" (dblclick)="click2(product)"
+                                    style="text-decoration:none;">
+                                    <div class="product-grid-item-top">
+                                        <span>
+                                            <a href="javascript:;" (click)="changeFavorite(product.object)">
+                                                <i [class]="classIconFavorite(product.object)"></i>
+                                            </a>
+                                        </span>
+                                    </div>
+                                    <div class="product-grid-item-content">
+                                        <!-- <a [routerLink]="product.routerLink" href="#"
+                                            (click)="handler.share.navigation = product.title; handler.share.navigationIcon = product.icon"> -->
+                                        <i [class]="classIconObject(product.object)"></i>
+                                        <!-- </a> -->
+                                        <div class="product-name"
+                                            style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">
+                                            <!-- <a [routerLink]="product.routerLink" href="#"
+                                                style="text-decoration:none;"
+                                                (click)="handler.share.navigation = product.title; handler.share.navigationIcon = product.icon">
+                                                {{product.object.name}}
+                                            </a> -->
+                                            {{product.object.name}}
+                                        </div>
+                                    </div>
+
+                                </a>
+
+                            </div>
+                        </div>
+                    </ng-template>
+                </p-dataView>
+            </div>
+        </div>
+    </div>
+    
+    <div class="p-col-3">
+        <div style="margin-top: -4px;">
+            <p-card #pnl styleClass="my-p-card-content" [style]="{width: '97%', backgroundColor: '#EFF3F8'}">
+                <p-toolbar styleClass="c-tooblar-dialog" [style]="{'margin-top': '-35px', 'margin-right': '-33px'}">
+                    <div class="p-toolbar-group-left">
+                    </div>
+                    <div class="p-toolbar-group-right">
+                        <div class="p-grid" style="padding-right: 8px;">
+                            <div class="p-col-12 heigthDiv" style="text-align: right; margin-bottom: 18px;">
+                                <button pButton class="c-button-card-size" [icon]="handler.share.iconObjetoValue"
+                                    style="width: 25px; height: 25px; background-color: #1c509b; border: none;"
+                                    tooltipPosition="top" [pTooltip]="label('lbl_valor')" (click)="objetoValue()">
+                                </button>
+                                <button pButton class="c-button-card-size" icon="fad fa-file-upload"
+                                    style="width: 25px; height: 25px; background-color: #1c509b; border: none;"
+                                    tooltipPosition="top" [pTooltip]="label('lbl_importar')" (click)="importValue()">
+                                </button>
+                                <button pButton class="c-button-card-size" icon="fad fa-pencil"
+                                    style="width: 25px; height: 25px; background-color: orange; border: none;"
+                                    tooltipPosition="top" [pTooltip]="label('lbl_editar')"
+                                    [disabled]="canDisable('OBJETO_UPDATE')" (click)="editObjeto()">
+                                </button>
+                                <button pButton class="c-button-card-size" [icon]="handler.share.iconAttribute"
+                                    style="width: 25px; height: 25px; background-color: orange; border: none;"
+                                    tooltipPosition="top" [pTooltip]="label('lbl_atributo')" (click)="attribute()">
+                                </button>
+                                <button pButton class="c-button-card-size" icon="fad fa-sitemap"
+                                    style="width: 25px; height: 25px; background-color: grey; border: none;"
+                                    tooltipPosition="top" [pTooltip]="label('lbl_relacionamentos')"
+                                    (click)="showComponentObjetoRelated()">
+                                </button>
+                                <button pButton class="c-button-card-size" icon="fad fa-code"
+                                    style="width: 25px; height: 25px; background-color: grey; border: none;"
+                                    tooltipPosition="top" [pTooltip]="label('lbl_codigo_sql')"
+                                    (click)="showComponentSqlViewer()">
+                                </button>
+                                <button pButton class="c-button-card-size" icon="fad fa-indent"
+                                    style="width: 25px; height: 25px; background-color: grey; border: none;"
+                                    tooltipPosition="top" [pTooltip]="label('lbl_historico')"
+                                    (click)="showComponentHistory()">
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </p-toolbar>
+                <div style="padding-top: 18px" [style.overflow-x]="'hidden'"
+                    [style.height]="windowInnerHeightScrolDetail()">
+
+                    <div class="p-grid" style="padding-right: 5px;">
+                        <div class="p-col-4 heigthDiv div-no-wrap" style="text-align: left;">
+                            <i [class]="selectedMenu?.icon" style="padding-right: 5px;"> </i>
+                            <label class="labelKey">{{label('lbl_nome')}}:</label>
+                        </div>
+                        <div class="p-col-8 heigthDiv div-no-wrap" style="text-align: right;">
+                            <label class="labelValue">{{objetoInfo?.name}}</label>
+                        </div>
+                        <div class="p-col-12 heigthDiv" style="margin-bottom: 0px;">
+                            <hr class="lineH">
+                        </div>
+                        <div class="p-col-5 heigthDiv div-no-wrap" style="text-align: left;">
+                            <i class="fad fa-database" style="padding-right: 5px;"></i>
+                            <label class="labelKey">{{label('lbl_base_de_dados')}}:</label>
+                        </div>
+                        <div class="p-col-7 heigthDiv div-no-wrap" style="text-align: right;">
+                            <label class="labelValue">{{objetoInfo?.database}}</label>
+                        </div>
+                        <div class="p-col-12 heigthDiv" style="margin-bottom: 0px;">
+                            <hr class="lineH">
+                        </div>
+                        <div class="p-col-3 heigthDiv div-no-wrap" style="text-align: left;">
+                            <i style="padding-right: 14px;"></i>
+                            <label class="labelKey">{{label('lbl_tabela')}}:</label>
+                        </div>
+                        <div class="p-col-9 heigthDiv div-no-wrap" style="text-align: right;">
+                            <label class="labelValue">{{objetoInfo?.table}}</label>
+                        </div>
+                        <div class="p-col-12 heigthDiv" style="margin-bottom: 0px;">
+                            <hr class="lineH">
+                        </div>
+                        <div class="p-col-3 heigthDiv div-no-wrap" style="text-align: left;">
+                            <i style="padding-right: 14px;"></i>
+                            <label class="labelKey">{{label('lbl_atributos')}}:</label>
+                        </div>
+                        <div class="p-col-9 heigthDiv div-no-wrap" style="text-align: right;">
+                            <label class="labelValue">{{objetoInfo?.numAttributes}}</label>
+                        </div>
+                        <div class="p-col-12 heigthDiv" style="margin-bottom: 0px;">
+                            <hr class="lineH">
+                        </div>
+                        <div class="p-col-3 heigthDiv div-no-wrap" style="text-align: left;">
+                            <i style="padding-right: 14px;"></i>
+                            <label class="labelKey">{{label('lbl_registro_s')}}:</label>
+                        </div>
+                        <div class="p-col-9 heigthDiv div-no-wrap" style="text-align: right;">
+                            <label class="labelValue"> {{objetoInfo?.numRecords}}</label>
+                        </div>
+                        <div class="p-col-12 heigthDiv" style="margin-bottom: 0px;">
+                            <hr class="lineH">
+                        </div>
+                        <div class="p-col-3 heigthDiv div-no-wrap" style="text-align: left;">
+                            <i style="padding-right: 14px;"></i>
+                            <label class="labelKey">{{label('lbl_escopo')}}:</label>
+                        </div>
+                        <div class="p-col-9 heigthDiv div-no-wrap" style="text-align: right;">
+                            <label class="labelValue">{{objetoInfo?.scope}}</label>
+                        </div>
+                        <div class="p-col-12 heigthDiv" style="margin-bottom: 0px;">
+                            <hr class="lineH">
+                        </div>
+                        <div class="p-col-6 heigthDiv" style="text-align: left;">
+                            <i class="fas fa-key c-color-yellow" style="padding-right: 5px;"> </i>
+                            <label class="labelKey">{{label('lbl_chave')}}:</label>
+                        </div>
+                        <div class="p-col-6 heigthDiv" style="text-align: right;">
+                            <label class="labelValue" style="font-style: italic;">{{(objetoInfo?.keys == 0) ?
+                                label('lbl_nao') : label('lbl_sim')}}
+                            </label>
+                        </div>
+                        <div class="p-col-12 heigthDiv" *ngFor="let item of objetoInfo?.keys; let i = index">
+                            <div class="p-grid">
+                                <div class="p-col-5 heigthDiv" style="text-align: left;">
+                                    <label class="labelKey"> </label>
+                                </div>
+                                <div class="p-col-7 heigthDiv" style="text-align: right;">
+                                    <label class="labelValue">{{item}}</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-col-12 heigthDiv" style="margin-bottom: 0px;">
+                            <hr class="lineH">
+                        </div>
+                        <div class="p-col-10 heigthDiv" style="text-align: left;">
+                            <i class="fad fa-network-wired" style="padding-right: 5px;"></i>
+                            <label class="labelKey">{{label('lbl_conexoes_internas')}}:</label>
+                        </div>
+                        <div class="p-col-2 heigthDiv" style="text-align: right;">
+                            <label class="labelValue" style="font-style: italic;">{{(objetoInfo?.internal.length ==
+                                0) ?
+                                label('lbl_nao') : label('lbl_sim')}}
+                            </label>
+                        </div>
+                        <div class="p-col-12 heigthDiv" *ngFor="let item of objetoInfo?.internal; let i = index">
+                            <div class="p-grid">
+                                <div class="p-col-1 heigthDiv" style="text-align: left;">
+                                    <label class="labelKey"> </label>
+                                </div>
+                                <div class="p-col-11 heigthDiv" style="text-align: right;">
+                                    <i class="fad fa-plug fad style-icon" [style.color]="item.icon"> </i>
+                                    <label class="labelValue">{{item.databaseName}}</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-col-12 heigthDiv" style="margin-bottom: 0px;">
+                            <hr class="lineH">
+                        </div>
+
+                        <div class="p-col-10 heigthDiv" style="text-align: left;">
+                            <i class="fad fa-network-wired" style="padding-right: 5px;"></i>
+                            <label class="labelKey">{{label('lbl_conexoes_externas')}}:</label>
+                        </div>
+                        <div class="p-col-2 heigthDiv" style="text-align: right;">
+                            <label class="labelValue" style="font-style: italic;">{{(objetoInfo?.external.length ==
+                                0) ?
+                                label('lbl_nao') : label('lbl_sim')}}
+                            </label>
+                        </div>
+                        <div class="p-col-12 heigthDiv" *ngFor="let item of objetoInfo?.external; let i = index">
+                            <div class="p-grid">
+                                <div class="p-col-1 heigthDiv" style="text-align: left;">
+                                    <label class="labelKey"> </label>
+                                </div>
+                                <div class="p-col-11 heigthDiv" style="text-align: right;">
+                                    <i class="fad fa-plug fad style-icon" [style.color]="item.icon"> </i>
+                                    <label class="labelValue"> {{item.databaseName}}</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-col-12 heigthDiv" style="margin-bottom: 0px;">
+                            <hr class="lineH">
+                        </div>
+                        <div class="p-col-4 heigthDiv" style="text-align: left;">
+                            <i style="padding-right: 19px;"></i>
+                            <label class="labelKey">{{label('lbl_descricao')}}:</label>
+                        </div>
+                        <div class="p-col-8 heigthDiv" style="text-align: right;">
+                            <label class="labelValue">{{objetoInfo?.description}}</label>
+                        </div>
+                    </div>
+                </div>
+            </p-card>
+        </div>
+    </div>
+
+    <p-blockUI [target]="pnl" [blocked]="blockedPanel">
+        <i class="pi pi-spin pi-spinner" style="font-size: 5rem; color: whitesmoke;"></i>
+    </p-blockUI>
+
+    <p-blockUI [target]="dvCards" [blocked]="blockedDvCards">
+        <i class="pi pi-spin pi-spinner" style="font-size: 5rem; color: whitesmoke;"></i>
+    </p-blockUI>
+
+</div>
+
+<!-- Home CropLife -->
+<div *ngIf="showHome('CROPLIFE')" class="p-grid">
+
+    <div class="container-cards p-col-12">
+        <p-card subheader="Bem-vindo ao SIMC Sistema de Informações de Mercado CropLife"
+            [style]="{width: '100%', height: '140px', backgroundColor: '#EFF3F8'}" styleClass="my-p-card-content">
+            <div style="padding: 3px;">
+                Esta plataforma foi desenvolvida para que você possa reportar os dados de sua empresa nos painéis de
+                soja, algodão, defensivos biológicos e milho.
+            </div>
+            <div style="padding: 3px;">
+                Os painéis aos quais o seu usuário possui acesso aparecem nos cards abaixo. Em caso de dúvidas de
+                utilização, consulte o manual do painel.
+            </div>
+            <div style="padding: 3px;">
+                Caso deseje visualizar os usuários de sua empresa, clique no card Empresa.
+            </div>
+            <div style="padding: 3px;">
+                Nossa equipe de suporte está à disposição para lhe auxiliar na adoção da nova plataforma. Em caso de
+                dúvidas ou necessidade de cadastro de usuários adicionais, envie um e-mail para
+                daniel.muro@bdo.com.br.
+            </div>
+        </p-card>
+    </div>
+
+    <div class="p-col-12">
+        <div style="margin-top: -15px;" [style.overflow-x]="'hidden'" [style.height]="windowInnerHeightSrollCropLife()">
+            <div class="card" [style.height]="windowInnerHeightCropLife()">
+                <p-dataView #pnl1 [value]="products" filterBy="title" [sortField]="sortField" [sortOrder]="sortOrder"
+                    layout="grid" [style]="{'zIndex':'0'}">
+                    <!-- <ng-template pTemplate="header">
+                        <div style="margin: -15px;" class="p-grid">
+                            <div class="p-col-4 p-fluid">
+                                <span class="p-input-icon-left p-mb-2 p-mb-md-0">
+                                    <i class="pi pi-search"></i>
+                                    <input type="search" pInputText placeholder="Search by Name"
+                                        (input)="dv.filter($event.target.value)">
+                                </span>
+                            </div>
+                            <div style="margin-top: 6px; " class="p-col-6 p-fluid">
+                                <a href="javascript:;" (click)="filterFavorite()">
+                                    <i [class]="iconFilterCards"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </ng-template> -->
+                    <ng-template let-product pTemplate="gridItem">
+                        <div class="p-col-12 p-md-2" style="max-width: 250px">
+                            <div class="product-grid-item card" [style.background-color]="colorCard(product)" #EFF3F8>
+                                <a href="javascript:;" (click)="click1(product);" (dblclick)="click2(product)"
+                                    style="text-decoration:none;">
+                                    <div class="product-grid-item-top">
+                                        <span>
+                                            <a href="javascript:;" (click)="changeFavorite(product.object)">
+                                                <i [class]="classIconFavorite(product.object)"></i>
+                                            </a>
+                                        </span>
+                                    </div>
+                                    <div class="product-grid-item-content">
+                                        <i [class]="classIconObject(product.object)"></i>
+                                        <div class="product-name"
+                                            style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">
+                                            {{product.object.name}}
+                                        </div>
+                                    </div>
+
+                                </a>
+
+                            </div>
+                        </div>
+                    </ng-template>
+                </p-dataView>
+            </div>
+        </div>
+    </div>
+
+    <p-blockUI [target]="pnl1" [blocked]="blockedDvCards">
+        <i class="pi pi-spin pi-spinner" style="font-size: 5rem; color: whitesmoke;"></i>
+    </p-blockUI>
+
+</div>
+
+<app-sql-viewer *ngIf="displaySqlViewer" [nameObject]="selectedObjeto?.name" [codeObject]="selectedObjeto?.code"
+    (hideComponentSqlViewer)="hideComponentSqlViewer($event)">
+</app-sql-viewer>
+
+<app-objeto-related *ngIf="displayRelationship" [nameObjeto]="selectedObjeto?.name" [codeObjeto]="selectedObjeto?.code"
+    [source]="'objeto'" (hideComponentObjetoRelated)="hideComponentObjetoRelated($event)">
+</app-objeto-related>

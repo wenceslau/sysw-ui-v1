@@ -1,0 +1,319 @@
+<div class="c-container-page">
+    <app-user-action *ngIf="displayHistory" [inputModule]="'CORE'" [inputIdtRecord]="idRecord"
+        [inputNameObject]="nameObject" [inputDescription]="descriptionObject"
+        (hideComponentHistory)="hideComponentHistoryEvent($event)"></app-user-action>
+
+    <app-nav-bar [totalRecords]="totalRecords"></app-nav-bar>
+
+    <div class="c-container-page-containt" [style.height]="windowInnerHeightContainerPageContaint()">
+
+        <form autocomplete="off" (ngSubmit)="filter()" [formGroup]="formFilter">
+            <div class="p-grid p-justify-rigth c-div-toolbar-filter">
+                <div class="p-col-fixed">
+                    <button pButton type="button" class="c-button-toolbar c-color-blue"
+                        icon="fad fa-plus-circle c-button-icon-size" [pTooltip]="label('lbl_novo_registro')"
+                        tooltipPosition="right" (click)="showDialogInput(null)"
+                        [disabled]="canDisable('CORE_DATA_SERVICE_CLONE')"></button>
+                    <button pButton type="button" class="c-button-toolbar c-color-green"
+                        icon="fad fa-sync c-button-icon-size" [pTooltip]="label('lbl_atualizacao_de_tela')"
+                        tooltipPosition="right" (click)="listAll()"></button>
+                </div>
+                <div class="p-col-12 p-md-5 p-lg-4 p-fluid" *ngIf="isDefaultSector">
+                    <span class="ui-float-label form-group">
+                        <p-dropdown name="businessUnit" [options]="strBusinessUnities" formControlName="codBusinessUnit"
+                            [placeholder]="label('lbl_pesquisar_por_unidade_d_n')" filter="false" [showClear]="true"
+                            (onChange)="onChangeFilter()"></p-dropdown>
+                    </span>
+                </div>
+            </div>
+
+        </form>
+
+        <hr>
+
+        <div class="p-grid">
+            <div class="p-col">
+
+                <p-table #table styleClass="p-datatable-sm" selectionMode="single" [(selection)]="selectedRowMainTable"
+                    [value]="dataServices" [responsive]="true" dataKey="code" [(selection)]="selecteddDataService"
+                    (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)"
+                    (onPage)="onChangePage($event)" [paginator]="paginator" [rows]="rows">
+
+                    <ng-template pTemplate="header" let-columns>
+                        <tr>
+                            <th class="grid-col-id">ID</th>
+                            <th *ngIf="isDefaultSector"> {{label('lbl_unidade_de_negocio')}}</th>
+                            <th>{{label('lbl_tipo')}}</th>
+                            <th>{{label('lbl_nome')}}</th>
+                            <th>{{label('lbl_descricao')}}</th>
+                            <th class="grid-col-status">Status</th>
+                            <th class="grid-col-action-4b"></th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-dataService>
+                        <tr [pSelectableRow]="dataService">
+                            <td [class]="classRowInactive('grid-col-id',dataService.status)">
+                                {{dataService.code}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',dataService.status)"
+                                *ngIf="isDefaultSector">
+                                {{dataService?.businessUnit?.name}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',dataService.status)">
+                                {{descriptionType(dataService.type)}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',dataService.status)">
+                                {{dataService.name}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',dataService.status)">
+                                {{dataService.description}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-status',dataService.status)">
+                                {{dataService.status ? label('lbl_ativo') : label('lbl_inativo')}}
+                            </td>
+                            <td class="grid-col-action-4b">
+                                <button pButton class="c-button-grid c-color-green" icon="fad fa-copy"
+                                    [pTooltip]="label('lbl_clonar')" tooltipPosition="top"
+                                    (click)="cloneDataService(dataService)"
+                                    [disabled]="canDisable('CORE_DATA_SERVICE_CLONE')">
+                                </button>
+                                <button pButton class="c-button-grid c-color-blue" icon="fad fa-pencil"
+                                    [pTooltip]="label('lbl_editar')" tooltipPosition="top"
+                                    (click)="showDialogInput(dataService.code)"
+                                    [disabled]="canDisable('CORE_DATA_SERVICE_UPDATE')">
+                                </button>
+                                <button pButton class="c-button-grid c-color-blue" icon="fad fa-link"
+                                    [pTooltip]="label('lbl_testar_conexao')" (click)="testConnection(dataService.code)">
+                                </button>
+                                <button pButton class="c-button-grid c-color-blue" icon="fad fa-indent"
+                                    [pTooltip]="label('lbl_historico')" tooltipPosition="left"
+                                    (click)="showComponentHistory(dataService, dataService.code, dataService.name, 'DataService')">
+                                </button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+
+                <hr>
+
+                <p-table #tableSec styleClass="p-datatable-sm" [value]="properties" [responsive]="true"
+                    [scrollable]="true" [scrollHeight]="scrollHeightTable">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th class="grid-col-id">ID</th>
+                            <th>{{label('lbl_tipo_de_dados')}}</th>
+                            <th>{{label('lbl_nome')}}</th>
+                            <th>{{label('lbl_valor')}}</th>
+                            <th>{{label('lbl_descricao')}}</th>
+                            <th class="grid-col-action-1b"></th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-property let-rowIndex="rowIndex">
+                        <tr>
+                            <td [class]="classRowInactive('grid-col-id',property.status)">
+                                {{property.code}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',property.status)">
+                                {{property.dataType}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',property.status)">
+                                {{property.name}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',property.status)">
+                                {{ property.dataType != "PASSWORD" ? property.value : property.value != '' ?
+                                '***********' : '' }}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',property.status)">{{property.description}}
+                            </td>
+                            <td class="grid-col-action-1b">
+                                <button pButton class="c-button-grid c-color-blue" icon="fad fa-indent" type="button"
+                                    [pTooltip]="label('lbl_historico')" tooltipPosition="left"
+                                    (click)="showComponentHistory('property',property.code, property.name, 'Property')">
+                                </button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+
+            </div>
+            <div class="p-col-fixed" style="width:163px">
+
+                <app-info-model [inputModule]="'CORE'" [inputTotalRecords]="totalRecords" [inputEntity]="'DataService'">
+                </app-info-model>
+
+            </div>
+        </div>
+
+        <p-dialog modal="modal" [header]="handler.share.navigation" [(visible)]="displayInput" [responsive]="true"
+            [closable]="true" [style]="{width: '600px'}">
+            <form autocomplete="off" (ngSubmit)="saveDataService()" [formGroup]="formInput">
+                <div class="p-grid">
+                    <div class="p-col-12 p-fluid" *ngIf="isDefaultSector">
+                        <span class="form-group">
+                            <label class="c-small-label" for="businessUnit">{{label('lbl_unidade_de_negocio')}}</label>
+                            <p-dropdown name="businessUnit" [options]="resumeBusinessUnities" optionLabel="name"
+                                formControlName="businessUnit" placeholder="." appendTo="body" required></p-dropdown>
+                        </span>
+                    </div>
+
+                    <div class="p-col-4 p-fluid">
+                        <span class="form-group">
+                            <label class="c-small-label" for="type">{{label('lbl_tipo')}}</label>
+                            <p-dropdown name="type" formControlName="type" placeholder="." [options]="serviceTypes"
+                                [readonly]="editing || cloning || !isSa"
+                                [class]="classReadonlyDropdow((editing || cloning || !isSa))" required>
+                            </p-dropdown>
+                        </span>
+                    </div>
+
+                    <div class="p-col-4 p-fluid">
+                        <span class="form-group">
+                            <label class="c-small-label" for="identifier">{{label('lbl_identificador')}}</label>
+                            <input pInputText type="text" name="identifier" formControlName="identifier"
+                                [class]="classReadonlyInput(true, 2)" readonly>
+                        </span>
+                    </div>
+                    <div class="p-col-4 p-fluid">
+                        <span class="form-group">
+                            <label class="c-small-label" for="name">{{label('lbl_nome')}}</label>
+                            <input pInputText type="text" name="name" formControlName="name" required>
+                        </span>
+                    </div>
+                    <div class="p-col-12 p-fluid">
+                        <span class="form-group">
+                            <label class="c-small-label" for="description">{{label('lbl_descricao')}}</label>
+                            <input pInputText type="text" name="description" formControlName="description" required>
+                        </span>
+                    </div>
+                    <div class="p-col-12">
+                        <label class="c-small-label" for="table">{{label('lbl_propriedade')}}</label>
+                        <p-table #tableThird styleClass="p-datatable-sm" [value]="properties" [responsive]="true"
+                            [scrollable]="true" scrollHeight="180px">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <!-- <th class="grid-col-id">ID</th> -->
+                                    <th style="width: 50%">{{label('lbl_nome')}}</th>
+                                    <th style="width: 50%">{{label('lbl_valor')}}</th>
+                                    <!-- <th style="width: 31%">{{label('lbl_descricao')}}</th> -->
+                                    <th class="grid-col-action-1b"></th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-property let-rowIndex="rowIndex">
+                                <tr>
+                                    <!-- <td [class]="classRowInactive('grid-col-id',property.status)">
+                                        {{property.code}}
+                                    </td> -->
+                                    <td [class]="classRowInactive('grid-col-string',property.status)"
+                                        style="width: 50%">
+                                        {{property.name}}
+                                    </td>
+                                    <td [class]="classRowInactive('grid-col-string',property.status)"
+                                        style="width: 50%">
+                                        {{ property.dataType != "PASSWORD" ? property.value : property.value != '' ?
+                                        '***********' : '' }}
+                                    </td>
+                                    <!-- <td [class]="classRowInactive('grid-col-string',property.status)"
+                                        style="width: 31%">
+                                        {{property.description}}
+                                    </td> -->
+                                    <td class="grid-col-action-1b">
+                                        <button pButton class="c-button-grid c-color-blue" icon="fad fa-pencil"
+                                            type="button" [pTooltip]="label('lbl_editar')" tooltipPosition="top"
+                                            (click)="preparerEditProperty(property, rowIndex)"
+                                            [disabled]="canDisable('CORE_DATA_SERVICE_UPDATE')">
+                                        </button>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                    <div class="p-col-12">
+                        <hr>
+                        <p-toolbar styleClass="c-tooblar-dialog">
+                            <div class="p-toolbar-group-left">
+                                <p-checkbox [label]="label('lbl_ativo')" name="status" formControlName="status"
+                                    binary="true">
+                                </p-checkbox>
+                            </div>
+                            <div class="p-toolbar-group-right">
+                                <button pButton class="p-button-sm" type="submit" pButton icon="fad fa-check-double"
+                                    [label]="label('lbl_salvar')" [disabled]="!formInput.valid"></button>
+                                <button pButton class="p-button-sm c-color-back-red" type="button" icon="fad fa-times"
+                                    [label]="label('lbl_fechar')" (click)="hidenDialogInput()"></button>
+                                <button pButton class="p-button-sm p-button-success" type="button"
+                                    icon="fad fa-plus-circle" [label]="label('lbl_nova_propriedade')"
+                                    (click)="preparerNewProperty()"
+                                    [disabled]="canDisableAddPropertie('CORE_DATA_SERVICE_INSERT')"></button>
+                            </div>
+                        </p-toolbar>
+                    </div>
+                </div>
+            </form>
+        </p-dialog>
+
+        <p-dialog [header]="label('lbl_propriedade')" modal="modal" [(visible)]="displayPropertyInput"
+            [responsive]="true" [closable]="true" [style]="{width: '450px'}">
+            <form autocomplete="off" (ngSubmit)="confirmProperty()" [formGroup]="formPropertyInput">
+                <div>
+                    <div class="p-grid  p-fluid">
+
+                        <div class="p-col-12">
+                            <span class="form-group">
+                                <label class="c-small-label" for="name">{{label('lbl_tipo_de_dados')}}</label>
+                                <p-dropdown name="dataType" [options]="dataType" formControlName="dataType"
+                                    placeholder="." required (onChange)="onChangeDataType()"></p-dropdown>
+                            </span>
+                        </div>
+
+                        <div class="p-col-12">
+                            <span class="form-group">
+                                <label class="c-small-label" for="name">{{label('lbl_nome')}}</label>
+                                <input pInputText [class]="classReadonlyInput(editProperty, 1)" type="text" name="name"
+                                    formControlName="name" [pKeyFilter]="blockSpace"
+                                    [ngModel]="formPropertyInput.get('name').value | uppercase"
+                                    [readonly]="editProperty" required>
+                            </span>
+                        </div>
+
+                        <div class="p-col-12">
+                            <span class="form-group">
+                                <label class="c-small-label" for="value">{{label('lbl_valor')}}</label>
+                                <input *ngIf="!showDropdowProvider" pInputText [type]="dataTypeSelected" name="value"
+                                    formControlName="value">
+                                <p-dropdown *ngIf="showDropdowProvider" name="provider" [options]="providers"
+                                    placeholder="." formControlName="value">
+                                </p-dropdown>
+                            </span>
+                        </div>
+
+                        <div class="p-col-12">
+                            <span class="form-group">
+                                <label class="c-small-label" for="description">{{label('lbl_descricao')}}</label>
+                                <input pInputText type="text" name="description" formControlName="description" required>
+                            </span>
+                        </div>
+
+                        <div class="p-col-12">
+                            <hr>
+                            <p-toolbar styleClass="c-tooblar-dialog">
+                                <div class="p-toolbar-group-left">
+                                </div>
+                                <div class="p-toolbar-group-right">
+                                    <button pButton class="p-button-sm" type="submit" pButton icon="fad fa-check-double"
+                                        [label]="label('lbl_adicionar')" [disabled]="!formPropertyInput.valid">
+                                    </button>
+                                    <button pButton class="p-button-sm c-color-back-red" type="button"
+                                        icon="fad fa-times" [label]="label('lbl_fechar')"
+                                        (click)="displayPropertyInput = false">
+                                    </button>
+                                </div>
+                            </p-toolbar>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </p-dialog>
+
+    </div>
+
+</div>

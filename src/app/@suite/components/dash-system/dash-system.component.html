@@ -1,0 +1,175 @@
+<div class="container-cards">
+
+    <div class="p-grid">
+        <div class="p-col-3">
+            <p-card #pnl [header]="label('lbl_usuario')" subheader="{{handler.share.infoUser?.name}}"
+                [style]="{width: '100%', height: '140px', backgroundColor: '#EFF3F8'}" styleClass="my-p-card-content">
+                <div>
+                    {{label('lbl_perfil')}}: <span style="font-style: italic">{{handler.share.infoUser?.profile}}</span>
+                </div>
+                <div>
+                    {{label('lbl_email')}}: <span style="font-style: italic">{{handler.share.infoUser?.email}}</span>
+                </div>
+                <div>
+                    {{label('lbl_usuario_desde')}}: <span style="font-style: italic">{{handler.share.infoUser?.dateStart
+                        | date:'dd/MM/yy HH:mm'}}</span>
+                </div>
+                <div>
+                    {{label('lbl_ultimo_acesso')}}: <span
+                        style="font-style: italic">{{handler.share.infoUser?.lastAccess | date:'dd/MM/yy HH:mm'}}</span>
+                </div>
+            </p-card>
+        </div>
+
+        <div class="p-col-3">
+            <p-card #env [header]="label('lbl_unidade_de_negocio')"
+                subheader="{{handler.share.infoEnviorment?.busiessUnit}}"
+                [style]="{width: '100%', height: '140px', backgroundColor: '#EFF3F8'}" styleClass="my-p-card-content">
+                <div>
+                    {{label('lbl_setor')}}: <span
+                        style="font-style: italic">{{handler.share.infoEnviorment?.sector}}</span>
+                </div>
+                <div *ngIf="!handler.share.infoEnviorment?.hasDatabaseSector">
+                    <span>{{label('lbl_licenciamento')}} <a href="javascript:;"
+                            (click)="displayLincese=true">{{label('lbl_visualizar')}}.</a></span>
+                </div>
+                <div *ngIf="!handler.share.infoEnviorment?.hasDatabaseSector"><br> </div>
+                <div *ngIf="handler.share.infoEnviorment?.hasDatabaseSector">
+                    {{label('lbl_servico_de_dados')}}: <span
+                        style="font-style: italic">{{handler.share.infoEnviorment?.dataService}}</span>
+                </div>
+                <div *ngIf="!handler.share.infoEnviorment?.hasDatabaseSector"><br> </div>
+                <div *ngIf="handler.share.infoEnviorment?.hasDatabaseSector">
+                    {{label('lbl_base_de_dados_setor')}}: <span
+                        style="font-style: italic">{{handler.share.infoEnviorment?.dataBaseSector}}</span>
+                </div>
+                <div *ngIf="!handler.share.infoEnviorment?.hasDatabaseSector"><br>
+                </div>
+                <div *ngIf="handler.share.infoEnviorment?.hasDatabaseSector">
+                    <span>{{label('lbl_licenciamento')}}: <a href="javascript:;" style="font-style: italic;"
+                            (click)="displayLincese=true">{{label('lbl_visualizar')}}.</a></span>
+                </div>
+                <!-- <div *ngIf="handler.share.infoEnviorment?.hasDatabaseSector">
+                                {{label('lbl_quantidade_de_objetos')}}: <span
+                                    style="font-style: italic">{{handler.share.infoEnviorment?.countObject}}</span>
+                            </div> -->
+            </p-card>
+        </div>
+
+        <div class="p-col-3">
+            <p-card #sys [header]="label('lbl_sistema')" subheader="{{handler.share.infoSystem?.application}}"
+                [style]="{width: '100%', height: '140px', backgroundColor: '#EFF3F8'}" styleClass="my-p-card-content">
+                <div>
+                    {{label('lbl_versao')}}: <span
+                        style="font-style: italic">{{handler.share.infoSystem?.version}}</span>
+                </div>
+                <div>
+                    {{label('lbl_direitos_de_copia')}}©: <span style="font-style: italic">
+                        {{handler.share.infoSystem?.copyrigth}}</span>
+                </div>
+                <div>
+                    <span>{{label('lbl_todos_os_direitos_r')}}.</span>
+                </div>
+                <div>
+                    <span><a target="_blank" href="http://www.sysmonkey.com.br"
+                            style="font-style: italic;">{{label('lbl_politica_de_privacidade')}}.</a></span>
+                </div>
+            </p-card>
+        </div>
+
+        <div class="p-col-3">
+            <p-card #sys [style]="{width: '100%', height: '140px', backgroundColor: '#EFF3F8', 'text-align':'center'}"
+                styleClass="ui-card-shadow">
+                <div style="height: 134px; margin-top: -27px;">
+                    <div class="vertical-align">
+                        <img src="assets/{{handler.share.applicationLogo}}"
+                            style="max-height: 90px;max-width:270px; margin-top: 0px;" />
+                    </div>
+                </div>
+
+            </p-card>
+        </div>
+
+        <div class="p-col-3" *ngIf="false">
+            <p-card #sys styleClass="my-p-card-content"
+                [style]="{width: '100%',height: '270px', backgroundColor: '#EFF3F8', 'text-align':'center'}">
+                <div class="megaMenu">
+                    <div class="containerItensMegaMenu">
+                        <div style="font-size: 16px; padding-bottom: 3px; text-align: left;">
+                            <i class="fad fa-star c-color-yellow"></i>
+                            {{label('lbl_favoritos')}}
+                        </div>
+
+                        <ul id="favList"
+                            style="font-size: 14px;height: 200px;overflow-y: auto;border-top: 1px solid #D5D5D5">
+                            <ng-template ngFor let-item [ngForOf]="handler.share.itemsMenuHome">
+                                <li style="border-bottom: 1px solid #D5D5D5; width: calc(100% - 10px)">
+                                    <a [routerLink]="item.routerLink" href="#"
+                                        (click)="handler.share.navigation = item.title; handler.share.navigationIcon = item.icon">
+                                        <i [class]="item.icon"></i>
+                                        {{item.title}}
+                                    </a>
+                                </li>
+                                <!-- <hr style="background-color: #B0B4B7;"> -->
+                            </ng-template>
+                        </ul>
+                    </div>
+                </div>
+            </p-card>
+        </div>
+    </div>
+
+</div>
+
+<p-dialog [header]="label('lbl_licenciamento')" [style]="{width: '850px'}" [closable]="true"
+    [(visible)]="displayLincese" (onHide)="onHideDialog($event)">
+
+    <div class="p-grid p-fluid">
+        <div class="p-col-12">
+            <p-table styleClass="override" #tableDatasource
+                [value]="handler.share.infoEnviorment?.sysMonkey?.appLicences" [responsive]="true">
+                <ng-template pTemplate="header">
+                    <tr style="text-align: center;">
+                        <th class="col-action-header" style="width: 15%">{{label('lbl_aplicacao')}}</th>
+                        <th class="col-action-header" style="width: 10%">{{label('lbl_licencas')}}</th>
+                        <!-- <th class="col-action-header" style="width: 10%">{{label('lbl_em_uso')}}</th> -->
+                        <th class="col-action-header" style="width: 15%">{{label('lbl_expira_em')}}</th>
+                        <!-- <th class="col-action-header" style="width: 10%">Percentual</th> -->
+                        <th class="col-action-header" style="width: 25%">{{label('lbl_itens_da_licença')}}</th>
+                        <th class="col-action-header" style="width: 25%">{{label('lbl_itens_em_uso')}}</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-appLicense>
+                    <tr *ngIf="appLicense.applicationName != 'CORE'" style="text-align: center;">
+                        <td [class]="classRowInactive('col-action',true)">{{appLicense.applicationName}}</td>
+                        <td [class]="classRowInactive('col-action',true)">{{appLicense.licenceNumber}}</td>
+                        <!-- <td [class]="classRowInactive('col-action',true)">{{appLicense.licenseUse}}</td> -->
+                        <td [class]="classRowInactive('col-action',true)">
+                            {{appLicense.expiration | date:'dd/MM/yyyy'}}</td>
+                        <!-- <td [class]="classRowInactive('col-action',true)">{{((appLicense.licenseUse / appLicense.licenceNumber) * 100)}} %</td> -->
+                        <td [class]="classRowInactive('col-action',true)">{{appLicense.detailLicenseNumber}}</td>
+                        <td [class]="classRowInactive('col-action',true)">{{appLicense.detailLicenseUse}}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+        <div class="p-col-10">
+            <span class="form-group">
+                <label class="c-small-label" for="license">{{label('lbl_nova_licenca')}}</label>
+                <input pInputText [(ngModel)]="newSysMonkey" #license type="text" name="license">
+            </span>
+        </div>
+        <div class="p-col-2">
+            <div style="padding-top: 13px;">
+                <button pButton id="btnLogin" type="submit" [label]="label('lbl_enviar')" (click)="sendSysMonkey()"
+                    [disabled]="newSysMonkey?.length == 0">
+                </button>
+            </div>
+        </div>
+        <div class="p-col-12">
+            <span style="color: red; font-weight: bold;" *ngIf="!licenseSuccess">{{msgsLicense}}</span>
+            <span style="color: green; font-weight: bold;" *ngIf="licenseSuccess">{{msgsLicense}}</span>
+        </div>
+    </div>
+
+</p-dialog>

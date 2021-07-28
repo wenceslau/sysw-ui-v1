@@ -1,0 +1,99 @@
+.sideMenu{ 
+  height:calc(100% - 6.5rem);
+  width: 4.5rem;
+  position: absolute;
+  margin-top: 0.6rem;
+  margin-left: -0.63rem;
+  background-color: #444;
+  border-bottom-right-radius: 0px;
+  border-top-right-radius: 0px;
+}
+
+.route-bar {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  float: left;
+  width: 100%;
+  height: calc(100% - 7px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.route-bar > .menuItem a {
+  font-size: 1.4rem;
+  height: 100%;
+  text-align: center;
+  line-height: 3rem; 
+  color:#EEE;
+}
+
+.menuItem{
+  text-align: center;
+  padding: 0.49rem;
+  border-radius: 8px;
+}
+
+.menuItem a:active > a:visited, div.ativo {
+  background-color: #333;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 0.1px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #EFEFEF; 
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #DDD; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #666; 
+}
+
+// Favorite menu
+// .megaMenuFavoritos{
+//   // color:#EEE;
+//   // font-weight: normal;
+//   // padding: 15px;
+// }
+
+.megaMenuFavoritos a{
+  color:#EEE;
+  // border-radius: 3px;
+  // background-color: #666;
+  padding: 5px;
+  text-decoration: none;
+}
+
+.megaMenuFavoritos ul{
+  list-style: none;
+  padding: 0px;
+  margin-right: 10px;
+}
+
+.megaMenuFavoritos li{
+  border-radius: 3px;
+  background-color: #666;
+  margin:5px 0px 5px 0px;
+  padding: 5px 0px 5px 0px;
+}
+
+.megaMenuFavoritos i{
+  margin: 0px 12px 0px 10px;
+  width:15px;
+  text-align: center;
+}
+
+.containerItensMegaMenuFavoritos{
+  // float: left;
+  width: 230px;
+  position: relative;
+}

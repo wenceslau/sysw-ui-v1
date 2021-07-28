@@ -1,0 +1,52 @@
+<div id="sideMenu" class="sideMenu">
+    <div id="route-bar" class="route-bar">
+        <div class="menuItem" routerLinkActive="ativo">
+            <a href="javascript:;" routerLink="/home" [pTooltip]="label('lbl_pagina_inicial')" tooltipPosition="right">
+                <i class="fad fa-home-lg"></i>
+            </a>
+        </div>
+        <div class="menuItem" routerLinkActive="ativo"
+            *ngIf="handler.share.itemsMenuHome != null && handler.share.itemsMenuHome.length > 0">
+            <a (click)="megaMenuFavoritos.toggle($event)" [pTooltip]="label('lbl_favoritos')" tooltipPosition="right">
+                <i class="fad fa-star c-color-yellow"></i>
+            </a>
+        </div>
+        <div class="menuItem" routerLinkActive="ativo" style="border-bottom: 1px solid dimgray;">
+            <a routerLink="/dashboard" [pTooltip]="label('lbl_dashboard')" tooltipPosition="right">
+                <i class="fad fa-tachometer-alt"></i>
+            </a>
+        </div>
+
+        <ng-template ngFor let-item [ngForOf]="handler.share.itensMenuBar">
+            <div class="menuItem" routerLinkActive="ativo" *ngIf="item.routerLink != '/no'">
+                <a [routerLink]="item.routerLink" href="javascript:;" [pTooltip]="item.label + ' - '+item.title"
+                    (click)="handler.share.navigation = item.title; handler.share.navigationIcon = item.icon;">
+                    <i [class]="item.icon"></i>
+                </a>
+            </div>
+            <div *ngIf="item.routerLink == '/no'" style="border-bottom: 1px solid dimgray; padding: 0.25rem;"></div>
+        </ng-template>
+
+    </div>
+</div>
+
+<p-overlayPanel #megaMenuFavoritos [dismissable]="true"
+    [style]="{'background-color':'#444','border':'0','padding':'0px','width':'auto','margin-left':'40px','margin-top':'-25px'}">
+    <ng-template pTemplate>
+        <div class="megaMenuFavoritos">
+            <div class="containerItensMegaMenuFavoritos">
+                <ul>
+                    <ng-template ngFor let-item [ngForOf]="handler.share.itemsMenuHome">
+                        <li>
+                            <a [routerLink]="item.routerLink" href="#"
+                                (click)="handler.share.navigation = item.title; ; handler.share.navigationIcon = item.icon; megaMenuFavoritos.hide()">
+                                <i [class]="item.icon"></i>
+                                {{item.title}}
+                            </a>
+                        </li>
+                    </ng-template>
+                </ul>
+            </div>
+        </div>
+    </ng-template>
+</p-overlayPanel>

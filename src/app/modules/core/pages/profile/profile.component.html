@@ -1,0 +1,210 @@
+<div class="c-container-page">
+
+    <app-user-action *ngIf="displayHistory" [inputModule]="'CORE'" [inputIdtRecord]="idRecord"
+        [inputNameObject]="nameObject" [inputDescription]="descriptionObject"
+        (hideComponentHistory)="hideComponentHistoryEvent($event)"></app-user-action>
+
+    <app-nav-bar [totalRecords]="totalRecords"></app-nav-bar>
+
+    <div class="c-container-page-containt" [style.height]="windowInnerHeightContainerPageContaint()">
+
+        <form autocomplete="off" (ngSubmit)="filter()" [formGroup]="formFilter">
+            <div class="p-grid p-justify-rigth c-div-toolbar-filter">
+                <div class="p-col-fixed">
+                    <button pButton type="button" class="c-button-toolbar c-color-blue"
+                        icon="fad fa-plus-circle c-button-icon-size" [pTooltip]="label('lbl_novo_registro')"
+                        tooltipPosition="right" (click)="showDialogInput(null, pickListPermSourceTarget)"
+                        [disabled]="canDisable('CORE_PROFILE_INSERT')">
+                    </button>
+                    <button pButton type="button" class="c-button-toolbar c-color-green"
+                        icon="fad fa-sync c-button-icon-size" [pTooltip]="label('lbl_atualizacao_de_tela')"
+                        tooltipPosition="right" (click)="listAll()">
+                    </button>
+                    <button pButton type="button" class="c-button-toolbar c-color-red"
+                        icon="fad fa-eraser c-button-icon-size" [pTooltip]="label('lbl_limpar_filtros')"
+                        tooltipPosition="right" (click)="clearFilter()">
+                    </button>
+                    <button pButton type="submit" icon="fad fa-filter" style="display: none;">
+                    </button>
+                </div>
+                <div class="p-col p-fluid" *ngIf="isDefaultSector">
+                    <span class="ui-float-label form-group">
+                        <p-dropdown name="businessUnit" optionLabel="name" formControlName="businessUnitProfile"
+                            [placeholder]="label('lbl_pesquisar_por_unidade_d_n')" filter="false" [showClear]="true"
+                            [options]="resumeBusinessUnities" (onChange)="onChangeFilter()"></p-dropdown>
+                    </span>
+                </div>
+                <div class="p-col p-fluid">
+                    <span class="ui-float-label form-group">
+                        <input pInputText type="text" name="name" [placeholder]="label('lbl_pesquisar_por_perfil')"
+                            formControlName="name">
+                    </span>
+                </div>
+                <div class="p-col p-fluid">
+                    <span class="ui-float-label form-group">
+                        <p-multiSelect name="permission" [defaultLabel]="label('lbl_pesquisar_por_permissao')"
+                            filter="true" maxSelectedLabels="0" [options]="strPermissions" [showToggleAll]="false"
+                            [ngModelOptions]="{standalone: true}" [(ngModel)]="selectedCodPermissions"
+                            (onChange)="onChangeFilter()"></p-multiSelect>
+                    </span>
+                </div>
+                <div class="p-col p-fluid">
+                    <span class="ui-float-label form-group">
+                        <p-dropdown name="status" [options]="status" formControlName="status"
+                            [placeholder]="label('lbl_pesquisar_por_status')" [showClear]="true"
+                            (onChange)="onChangeFilter()">
+                        </p-dropdown>
+                    </span>
+                </div>
+            </div>
+        </form>
+
+        <hr>
+
+        <div class="p-grid">
+            <div class="p-col">
+
+                <p-table #table styleClass="p-datatable-sm" selectionMode="single" [(selection)]="selectedRowMainTable"
+                    [value]="profiles" [responsive]="true" [paginator]="paginator" [rows]="rows">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th class="grid-col-id">ID</th>
+                            <th *ngIf="isDefaultSector"> {{label('lbl_unidade_de_negocio')}}</th>
+                            <th>{{label('lbl_nome')}}</th>
+                            <th>{{label('lbl_tipo_perfil')}}</th>
+                            <th>{{label('lbl_permissoes')}}</th>
+                            <th class="grid-col-status">Status</th>
+                            <th class="grid-col-action-2b"></th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-profile>
+                        <tr [pSelectableRow]="profile">
+                            <td [class]="classRowInactive('grid-col-id',profile.status)">
+                                {{profile.code}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',profile.status)" *ngIf="isDefaultSector">
+                                {{ (profile.businessUnit === null ? '(Todas)': profile?.businessUnit.name )}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',profile.status)">
+                                {{profile.name}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',profile.status)">
+                                {{descriptioTypeProfile(profile.type)}}
+                            </td>
+                            <td class="grid-col-string" (mouseenter)="opPermissoes.hide($event); ">
+                                <a href="javascript:;" [class]="classLinkInactiveValidity(null, profile.status)"
+                                    (click)="setPermission(profile.permissions); opPermissoes.show($event)">
+                                    {{profile.permissions?.length}}
+                                    {{profile.permissions?.length == 1 ? label('lbl_permissao') :
+                                    label('lbl_permissoes') }}
+                                </a>
+                            </td>
+
+                            <td [class]="classRowInactive('grid-col-status',profile.status)">
+                                {{profile.status ? label('lbl_ativo') : label('lbl_inativo')}}
+                            </td>
+                            <td class="grid-col-action-2b">
+                                <button pButton class="c-button-grid c-color-green" icon="fad fa-pencil"
+                                    [pTooltip]="label('lbl_editar')" tooltipPosition="top"
+                                    (click)="showDialogInput(profile.code, pickListPermSourceTarget)"
+                                    [disabled]="canDisable('CORE_PROFILE_UPDATE')">
+                                </button>
+                                <button pButton class="c-button-grid c-color-blue" icon="fad fa-indent"
+                                    [pTooltip]="label('lbl_historico')" tooltipPosition="left"
+                                    (click)="showComponentHistory(profile, profile.code, profile.name, 'Profile')">
+                                </button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+
+            </div>
+            <div class="p-col-fixed" style="width:163px">
+                <app-info-model [inputModule]="'CORE'" [inputTotalRecords]="totalRecords" [inputEntity]="'Profile'">
+                </app-info-model>
+            </div>
+        </div>
+
+        <p-overlayPanel #opPermissoes [style]="{background: '#eff3f8'}">
+            <p-scrollPanel>
+                <div class="c-div-scrollpanel">
+                    <ng-template ngFor let-item [ngForOf]="selectedProfilePermissions">
+                        <ul>
+                            <li style="margin-left: -20px; padding-right: 10px">{{item.display}} </li>
+                        </ul>
+                    </ng-template>
+                </div>
+            </p-scrollPanel>
+        </p-overlayPanel>
+
+        <p-dialog modal="modal" [header]="handler.share.navigation" [responsive]="true" [closable]="true"
+            [style]="{width: '700px'}" [(visible)]="displayInput" (onHide)="onHideDialogInput($event)">
+            <form autocomplete="off" (ngSubmit)="saveProfile()" [formGroup]="formInput">
+                <div class="p-grid">
+                    <div class="p-col-12 p-fluid" *ngIf="isDefaultSector">
+                        <span class="form-group">
+                            <label class="c-small-label" for="businessUnit">{{label('lbl_unidade_de_negocio')}}</label>
+                            <p-dropdown [class]="classReadonlyDropdow(editing)" name="businessUnit"
+                                [options]="resumeBusinessUnities" optionLabel="name" formControlName="businessUnit"
+                                placeholder="." appendTo="body" [readonly]="editing" [required]="!editing"
+                                [showClear]="!editing" (onChange)="onChangeBusinessUnit()">
+                            </p-dropdown>
+                        </span>
+                    </div>
+                    <div class="p-col-8 p-fluid">
+                        <span class="form-group">
+                            <label class="c-small-label" for="name">{{label('lbl_nome')}}</label>
+                            <input pInputText type="text" name="name" formControlName="name" required>
+                        </span>
+                    </div>
+                    <div class="p-col-4 p-fluid">
+                        <span class="form-group">
+                            <label class="c-small-label" for="name">{{label('lbl_tipo_perfil')}}</label>
+                            <input [class]="classReadonlyInput(true, 2)" pInputText tooltipPosition="left"
+                                [value]="descriptioTypeProfile(formInput.get('type').value)" type="text" name="type"
+                                readonly>
+                        </span>
+                    </div>
+                    <div class="p-col-12 p-fluid">
+                        <span class="form-group">
+                            <label class="c-small-label" for="name">{{label('lbl_permissoes')}}</label>
+                            <p-pickList #pickListPermSourceTarget [showSourceControls]="false"
+                                [showTargetControls]="false" [source]="permissionsSource" [target]="permissionsTarget"
+                                [sourceHeader]="label('lbl_disponivel') +' '+ numSource"
+                                [targetHeader]="label('lbl_adicionado') +' '+  numTarget" filterBy="display"
+                                [responsive]="true" [sourceStyle]="{'height':'220px'}"
+                                [targetStyle]="{'height':'220px'}" (onMoveToTarget)="onMoveTo()"
+                                (onMoveToSource)="onMoveTo()" (onTargetFilter)="onTargetFilter($event)"
+                                (onSourceFilter)="onSourceFilter($event)">
+                                <ng-template let-permission pTemplate="item">
+                                    <div class="ui-helper-clearfix">
+                                        <div style="margin:4px; font-size: 12px">{{permission.display}}</div>
+                                    </div>
+                                </ng-template>
+
+                            </p-pickList>
+                        </span>
+                    </div>
+                    <div class="p-col-12">
+                        <hr>
+                        <p-toolbar styleClass="c-tooblar-dialog">
+                            <div class="p-toolbar-group-left">
+                                <p-checkbox [label]="label('lbl_ativo')" name="status" formControlName="status"
+                                    binary="true">
+                                </p-checkbox>
+                            </div>
+                            <div class="p-toolbar-group-right">
+                                <button pButton class="p-button-sm" type="submit" pButton icon="fad fa-check-double"
+                                    [label]="label('lbl_salvar')" [disabled]="disableSaveProfile(formInput.valid)"></button>
+                                <button pButton class="p-button-sm c-color-back-red" type="button" icon="fad fa-times"
+                                    [label]="label('lbl_fechar')" (click)="hidenDialogInput()"></button>
+                            </div>
+                        </p-toolbar>
+                    </div>
+                </div>
+            </form>
+        </p-dialog>
+
+    </div>
+
+</div>

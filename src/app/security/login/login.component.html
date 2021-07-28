@@ -1,0 +1,141 @@
+<div style="z-index: 10000; position: absolute; top: 25px; left: 30%; right: 30%;">
+    <p-messages [enableService]="false" [closable]="false" [(value)]="handler.messageLogin"></p-messages>
+</div>
+<div class="content-background">
+</div>
+<div class="flex-box">
+    <div class="content-credential">
+        <div>
+            <div class="content-credential-title">
+                <h3> <label>{{label('lbl_credencial', 'Credentials')}}</label></h3>
+            </div>
+            <form autocomplete="on">
+
+                <p-panel #pnl [showHeader]="false" styleClass="c-p-panel">
+                    <div class="p-grid" style="padding: 20px">
+                        <div class="p-col-12 p-fluid">
+                            <span class="p-input-icon-left">
+                                <i class="fad fa-user"></i>
+                                <input pInputText required ngModel #usuario type="text" name="username"
+                                    [(ngModel)]='username' [placeholder]="label('lbl_usuario', 'Username' )"
+                                    (blur)="setC()">
+                            </span>
+                        </div>
+                        <div class="p-col-12 p-fluid">
+                            <span class="p-input-icon-left">
+                                <i class="fad fa-lock"></i>
+                                <input pInputText required ngModel #senha type="password" name="pasword"
+                                    [placeholder]="label('lbl_senha', 'Password')">
+                            </span>
+                        </div>
+                        <div class="p-col-12 p-fluid">
+                            <button pButton type="submit" [label]="label('lbl_entrar', 'Log In')"
+                                [disabled]="!usuario.value && !senha.value"
+                                (click)="set(usuario.value, senha.value); senha.value = ''">
+                            </button>
+                        </div>
+                        <div class="p-col-12">
+                            <hr>
+                            <br>
+                            <div style="display: flex; align-items: center; justify-content: center;">
+                                <a title="Português" href="javascript:;" style="padding-right: 10px;"
+                                    (click)="setD('PT')">
+                                    <img src="assets/flg-pt.png">
+                                </a>
+                                <a title="English" href="javascript:;" style="padding-right: 10px;"
+                                    (click)="setD('EN')">
+                                    <img src="assets/flg-en.png">
+                                </a>
+                                <a title="Español" href="javascript:;" style="padding-right: 10px;"
+                                    (click)="setD('ES')">
+                                    <img src="assets/flg-es.png">
+                                </a>
+                                <label
+                                    style="margin-top: -5px; padding-right: 10px; color: lightgray;">{{handler.share.language}}</label>
+                                <a href="javascript:;" style="margin-top: -5px; font-size: 11px; color: #FFF;"
+                                    (click)="showResetByEmail();">
+                                    <label> {{label('lbl_esqueci_minha_senha', 'Forgot my password')}}</label>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </p-panel>
+            </form>
+            <div class="poweredBy">
+                <div>
+                    <label>{{label('lbl_versao', 'Version')}}: {{ handler.share.infoSystem?.version}}</label>
+                </div>
+                <div>
+                    <label>Powered by © {{handler.share.infoSystem?.copyrigth}}</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <p-blockUI [target]="pnl" [blocked]="blockedPanel">
+        <i class="pi pi-spin pi-spinner" style="font-size: 5rem; color: whitesmoke;"></i>
+    </p-blockUI>
+</div>
+<div class="flex-box-footer">
+    <div class="content-footer">
+        <img style="padding: 0.625rem" src="assets/logosys.png" width="120rem">
+    </div>
+
+</div>
+
+
+<p-dialog [header]="label('lbl_informe_seu_email', 'Enter your email')" modal="modal" [style]="{width: '450px'}"
+    [closable]="true" [responsive]="true" [(visible)]="displayResetByEmail">
+    <form autocomplete="on" #f1="ngForm">
+
+        <div class="p-grid p-fluid">
+            <div class="p-col-8">
+                <input pInputText ngModel #email type="text" name="email" [placeholder]="label('lbl_email', 'E-mail')">
+            </div>
+            <div class="p-col-4">
+                <button pButton id="btnLogin" type="submit" [label]="label('lbl_enviar', 'Send')" [disabled]="!f1.valid"
+                    (click)="setB(email.value)">
+                </button>
+            </div>
+            <div class="p-col-12" style="font-size: 11px;">
+                <p-messages [(value)]="msgsReset" [enableService]="false"></p-messages>
+            </div>
+        </div>
+
+    </form>
+</p-dialog>
+
+
+<p-dialog [header]="label('lbl_lincenca', 'License')" modal="modal" [style]="{width: '800px'}" [closable]="true"
+    [responsive]="true" [showHeader]="true" [(visible)]="displayLicense">
+    <form autocomplete="off" #f2="ngForm">
+
+        <div class="p-grid p-fluid">
+            <div class="p-col-12">
+                <span style="color: #004A95; font-weight: bold;">Sua licença expirou. Informe uma nova licença para
+                    acesso ao
+                    sistema</span>
+            </div>
+            <div class="p-col-10 p-fluid">
+                <span class="form-group">
+                    <label class="c-small-label" for="license">Chave Licença</label>
+                    <input pInputText ngModel #license type="text" name="license">
+                </span>
+            </div>
+            <div class="p-col-2">
+                <div style="padding-top: 15px;">
+                    <button pButton id="btnLogin" type="submit" label="Enviar"
+                        style="border: 1px solid #666;background: #666;color:#FFF" [disabled]="!f2.valid"
+                        (click)="setA(usuario.value, license.value)"></button>
+                </div>
+            </div>
+            <div class="p-col-12">
+                <span style="color: red; font-weight: bold;" *ngIf="!licenseSuccess">{{msgsLicense}}</span>
+                <span style="color: green; font-weight: bold;" *ngIf="licenseSuccess">{{msgsLicense}}</span>
+            </div>
+        </div>
+
+    </form>
+</p-dialog>

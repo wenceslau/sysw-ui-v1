@@ -1,0 +1,368 @@
+<div class="c-container-page">
+
+    <app-user-action *ngIf="displayHistory" [inputModule]="'CORE'" [inputIdtRecord]="idRecord"
+        [inputNameObject]="nameObject" [inputDescription]="descriptionObject"
+        (hideComponentHistory)="hideComponentHistoryEvent($event)"></app-user-action>
+
+    <app-user-history *ngIf="displayUserHistory" [inputUserCode]="selectedRowMainTable?.code"
+        [inputUsername]="selectedRowMainTable?.username"
+        (hideComponentUserHistory)="onHideComponentUserHistory($event)"></app-user-history>
+
+    <app-nav-bar [totalRecords]="totalRecords"></app-nav-bar>
+
+    <div class="c-container-page-containt" [style.height]="windowInnerHeightContainerPageContaint()">
+
+        <div class="p-grid">
+            <div class="p-col">
+                <form autocomplete="off" (ngSubmit)="filter()" [formGroup]="formFilter">
+                    <div class="p-grid p-justify-rigth c-div-toolbar-filter">
+                        <div class="p-col-fixed">
+                            <button pButton type="button" class="c-button-toolbar c-color-blue"
+                                icon="fad fa-plus-circle c-button-icon-size" [pTooltip]="label('lbl_novo_registro')"
+                                tooltipPosition="right" (click)="showDialogInput(null)"
+                                [disabled]="canDisable('CORE_USER_INSERT')"></button>
+                            <button pButton type="button" class="c-button-toolbar c-color-green"
+                                icon="fad fa-sync c-button-icon-size" [pTooltip]="label('lbl_atualizacao_de_tela')"
+                                tooltipPosition="right" (click)="listAll(); tbUser.reset()"></button>
+                            <button pButton type="button" class="c-button-toolbar c-color-red"
+                                icon="fad fa-eraser c-button-icon-size" [pTooltip]="label('lbl_limpar_filtros')"
+                                tooltipPosition="right" (click)="clearFilter(); username.value = ''"></button>
+                            <button pButton type="submit" icon="fad fa-filter" style="display: none;"></button>
+                        </div>
+                        <div class="p-col p-fluid" *ngIf="isDefaultSector">
+                            <span class="ui-float-label form-group">
+                                <p-dropdown name="businessUnit" optionLabel="name" formControlName="businessUnit"
+                                    [placeholder]="label('lbl_pesquisar_por_unidade_d_n')" filter="false"
+                                    [options]="resumeBusinessUnities" [showClear]="true" (onChange)="onChangeFilter()">
+                                </p-dropdown>
+                            </span>
+                        </div>
+                        <div class="p-col p-fluid">
+                            <span class="form-group">
+                                <input pInputText type="text" name="name"
+                                    [placeholder]="label('lbl_pesquisar_por_nome')" formControlName="name">
+                            </span>
+                        </div>
+                        <div class="p-col p-fluid">
+                            <span class="ui-float-label form-group">
+                                <input pInputText type="text" name="username"
+                                    [placeholder]="label('lbl_pesquisar_por_usuario')" formControlName="username">
+                            </span>
+                        </div>
+                        <div class="p-col p-fluid">
+                            <span class="ui-float-label form-group">
+                                <p-dropdown name="profile" optionLabel="name" formControlName="profile"
+                                    [placeholder]="label('lbl_pesquisar_por_perfil')" filter="false"
+                                    [options]="profilesFilter" [showClear]="true" (onChange)="onChangeFilter()">
+                                </p-dropdown>
+                            </span>
+                        </div>
+                        <div class="p-col p-fluid">
+                            <span class="ui-float-label form-group">
+                                <p-dropdown name="sector" optionLabel="name" formControlName="sector"
+                                    [placeholder]="label('lbl_pesquisar_por_setor')" filter="false"
+                                    [options]="resumeSectors" [showClear]="true" (onChange)="onChangeFilter()">
+                                </p-dropdown>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+
+                <hr>
+                <p-contextMenu #cm [model]="itemMenuContex"></p-contextMenu>
+
+                <p-table #tbUser styleClass="p-datatable-sm" selectionMode="single" [value]="users" 
+                    [paginator]="paginator" [rows]="rows" [responsive]="true" [(selection)]="selectedRowMainTable"
+                    [(contextMenuSelection)]="selectedRowMainTable" [contextMenu]="cm">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th class="grid-col-id">ID</th>
+                            <th style="width: 15%"> {{label('lbl_nome')}}</th>
+                            <th> {{label('lbl_usuario')}} </th>
+                            <th> {{label('lbl_email')}}</th>
+                            <th> {{label('lbl_perfil')}} </th>
+                            <th>{{label('lbl_setor')}}</th>
+                            <!-- <th>{{label('lbl_grupo')}}</th> -->
+                            <th class="grid-col-status">Status</th>
+                            <th class="grid-col-action-3b"></th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-user>
+                        <tr [pSelectableRow]="user" [pContextMenuRow]="user">
+                            <td [class]="classRowInactive('grid-col-id',user.status)">
+                                {{user.code}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',user.status)">
+                                {{user.name}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',user.status)">
+                                {{user.username}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',user.status)">
+                                {{user.email}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',user.status)">
+                                {{user.profile.name}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',user.status)"
+                                (mouseenter)="opSectors.hide($event); ">
+                                <a href="javascript:;" [class]="classLinkInactiveValidity(null, user.status)"
+                                    (click)="setSectors(user.sectors); opSectors.show($event)">
+                                    {{user.sectors?.length}}
+                                    {{user.sectors?.length == 1 ? label('lbl_setor') : label('lbl_setores') }}
+                                </a>
+                            </td>
+                            <!-- <td [class]="classRowInactive('grid-col-string',user.status)"
+                                (mouseenter)="opGroups.hide($event); ">
+                                <a href="javascript:;" [class]="classLinkInactiveValidity(null, user.status)"
+                                    (click)=" opGroups.show($event); getGroups(user);">
+                                    {{label('lbl_grupo_s')}}
+                                </a>
+                            </td> -->
+                            <td [class]="classRowInactive('grid-col-status',user.status)">
+                                <input type="checkbox" onclick="return false;" [checked]='user.status'>
+                            </td>
+                            <td class="grid-col-action-3b">
+                                <button pButton class="c-button-grid c-color-green" icon="fad fa-pencil"
+                                    [pTooltip]="label('lbl_editar')" tooltipPosition="top"
+                                    (click)="showDialogInput(user.code)" [disabled]="canDisable('CORE_USER_UPDATE')">
+                                </button>
+                                <button pButton class="c-button-grid c-color-blue" icon="fad fa-lock"
+                                    [pTooltip]="label('lbl_reset_senha')" tooltipPosition="top"
+                                    (click)="showDialogReset(user.code, user.name, user.email)"
+                                    [disabled]="canDisable('CORE_PASSWORD_RESET')">
+                                </button>
+                                <button pButton class="c-button-grid c-color-blue" icon="fad fa-indent"
+                                    [pTooltip]="label('lbl_historico')" tooltipPosition="top"
+                                    (click)="showComponentHistory(user, user.code, user.name, 'User')">
+                                </button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+
+            <div class="p-col-fixed" style="width: 24rem;">
+                <div style="padding-top: 5px">
+                    <div style="padding-bottom: 7px;">
+                        <form autocomplete="on" #f="ngForm">
+                            <span class="ui-float-label p-fluid">
+                                <input #username pInputText class="form-control" type="text" name="username"
+                                    [placeholder]="label('lbl_ultimos_acessos_p_p_u')">
+                            </span>
+                            <button pButton type="submit" style="display: none;"
+                                (click)="filterUserLogon(username.value)">
+                            </button>
+                        </form>
+                    </div>
+                    <hr>
+
+                    <p-table #History styleClass="p-datatable-sm" [value]="userLogonHistories" [responsive]="true"
+                        [paginator]="paginatorLogon" [rows]="rowsLogon" [lazy]="true"
+                        [totalRecords]="totalRecordsUserAllLogonHistories" [pageLinks]="2"
+                        (onLazyLoad)="onChangePageAllLogon($event)">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th style="width: 33%">{{label('lbl_usuario')}}</th>
+                                <th style="width: 33%">{{label('lbl_endereco_ip')}}</th>
+                                <th style="width: 33%; text-align: center">{{label('lbl_data_logon')}}
+                                </th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-history>
+                            <tr>
+                                <td class="grid-col-string" style="height:3.08rem;">
+                                    {{history.userLogon}}
+                                </td>
+                                <td class="grid-col-string">
+                                    {{history.ipAddress}}
+                                </td>
+                                <td class="grid-col-string" style="text-align: center">
+                                    {{history.dateRecord | date:'dd/MM/yy HH:mm' }}
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>
+        </div>
+
+        <p-overlayPanel #opSectors [style]="{background: '#eff3f8'}">
+            <p-scrollPanel>
+                <div class="c-div-scrollpanel">
+                    <ng-template ngFor let-item [ngForOf]="selectedUserSectos">
+                        <ul>
+                            <li style="margin-left: -20px; padding-right: 10px">{{item.name}} </li>
+                        </ul>
+                    </ng-template>
+                </div>
+            </p-scrollPanel>
+        </p-overlayPanel>
+
+        <p-overlayPanel #opGroups [style]="{background: '#eff3f8'}">
+            <p-scrollPanel>
+                <div class="c-div-scrollpanel">
+                    <p-panel #pnl [showHeader]="false" styleClass="c-p-panel">
+                        <ng-template ngFor let-item [ngForOf]="userGroups">
+                            <ul>
+                                <li style="margin-left: -20px; padding-right: 10px">{{item.name}} </li>
+                            </ul>
+                        </ng-template>
+                    </p-panel>
+                </div>
+            </p-scrollPanel>
+        </p-overlayPanel>
+
+        <p-dialog modal="modal" [header]="handler.share.navigation" [closable]="true" [style]="{width: '600px'}"
+            [(visible)]="displayInput" (onHide)="onHideDialogInput($event)">
+            <form autocomplete="off" (ngSubmit)="saveUser()" [formGroup]="formInput">
+                <div>
+                    <div class="p-grid">
+                        <div *ngIf="isDefaultSector" class="p-col-12 p-fluid">
+                            <span class="form-group">
+                                <label class="c-small-label"
+                                    for="businessUnit">{{label('lbl_unidade_de_negocio')}}</label>
+                                <p-dropdown [class]="classReadonlyDropdow(editing)" name="businessUnit"
+                                    [options]="resumeBusinessUnities" optionLabel="name" formControlName="businessUnit"
+                                    placeholder="." appendTo="body" [readonly]="editing"
+                                    (onChange)="onChangeBusinessUnit()" [required]="!editing"></p-dropdown>
+                            </span>
+                        </div>
+                        <div class="p-col-12 p-fluid">
+                            <span class="form-group">
+                                <label class="c-small-label" for="name">{{label('lbl_nome')}}</label>
+                                <input [class]="classReadonlyInput(readonlyInput(), 1)" pInputText type="text"
+                                    name="name" formControlName="name" [readonly]="readonlyInput()" required>
+                            </span>
+                        </div>
+                        <div class="p-col-6 p-fluid">
+                            <span class="form-group">
+                                <label class="c-small-label" for="username">{{label('lbl_usuario')}}</label>
+                                <input [class]="classReadonlyInput(readonlyInput(), 1)" pInputText type="text"
+                                    name="username" formControlName="username" [pKeyFilter]="blockSpace"
+                                    [readonly]="readonlyInput()" required
+                                    [ngModel]="formInput.get('username').value | lowercase">
+                            </span>
+                        </div>
+                        <div class="p-col-6 p-fluid">
+                            <span class="form-group">
+                                <label class="c-small-label" for="email">{{label('lbl_email')}}</label>
+                                <input pInputText type="email" name="email" formControlName="email" required email>
+                            </span>
+                        </div>
+                        <div class="p-col-12 p-fluid">
+                            <span class="form-group">
+                                <label class="c-small-label" for="perfil">{{label('lbl_perfil')}}</label>
+                                <p-dropdown [class]="classReadonlyDropdow(readonlyProfile())" name="profile"
+                                    [options]="resumeProfiles" [readonly]="readonlyProfile()"
+                                    [required]="!readonlyProfile()" optionLabel="name" formControlName="profile"
+                                    placeholder="." appendTo="body" (onChange)="onChangeProfile()"></p-dropdown>
+                            </span>
+                        </div>
+                        <div class="p-col-12 p-fluid">
+                            <span class="form-group">
+                                <label class="c-small-label" for="sector">{{label('lbl_setor')}}</label>
+                                <p-multiSelect name="sector" [options]="resumeSectors" optionLabel="name"
+                                    formControlName="sectors" filter="true" [required]="!readonlySector()"
+                                    defaultLabel="." [showToggleAll]="false" scrollHeight="200px" appendTo="body">
+                                </p-multiSelect>
+                            </span>
+                        </div>
+                        <div class="p-col-12 p-fluid">
+                            <div class="c-sector-area">
+                                <p-scrollPanel [style]="{width: '100%', height: '7.5rem'}">
+                                    <span>
+                                        <li *ngFor="let item of sectorSorted">{{item.name}}</li>
+                                    </span>
+                                </p-scrollPanel>
+                            </div>
+                        </div>
+                        <div *ngIf="buHasDomainControl" class="p-col-12 p-fluid">
+                            <span>
+                                <p-checkbox [label]="label('lbl_autenticacao_windows')" name="windowsAutentication"
+                                    formControlName="windowsAutentication" binary="true"
+                                    (onChange)="onChangeWindowsAutentication($event)">
+                                </p-checkbox>
+                            </span>
+                        </div>
+                        <div class="p-col-12 p-fluid">
+                            <div style="padding-bottom: 5px">
+                                <label class="c-small-label" for="sector">{{label('lbl_notificacoes')}}</label>
+                            </div>
+                            <span class="form-group" style="padding-right: 12px">
+                                <p-checkbox [label]="label('lbl_receber')" name="receiveNotify"
+                                    formControlName="receiveNotify" binary="true">
+                                </p-checkbox>
+                            </span>
+                            <span class="form-group" style="padding-right: 12px">
+                                <p-checkbox [label]="label('lbl_enviar')" name="sendNotify" formControlName="sendNotify"
+                                    binary="true">
+                                </p-checkbox>
+                            </span>
+                        </div>
+                        <div class="p-col-12" style="margin-bottom: -10px;">
+                            <hr>
+                            <p-toolbar styleClass="c-tooblar-dialog">
+                                <div class="p-toolbar-group-left">
+                                    <p-checkbox [label]="label('lbl_ativo')" name="status" formControlName="status"
+                                        binary="true">
+                                    </p-checkbox>
+                                </div>
+                                <div class="p-toolbar-group-right">
+                                    <button pButton class="p-button-sm" type="submit" pButton icon="fad fa-check-double"
+                                        [label]="label('lbl_salvar')" [disabled]="!formInput.valid"></button>
+                                    <button pButton class="p-button-sm c-color-back-red" type="button"
+                                        icon="fad fa-times" [label]="label('lbl_fechar')"
+                                        (click)="hidenDialogInput()"></button>
+                                </div>
+                            </p-toolbar>
+                        </div>
+
+                    </div>
+                </div>
+
+            </form>
+        </p-dialog>
+
+        <p-dialog modal="modal" [header]="label('lbl_redefinicao_de_senha')" [closable]="true" [(visible)]="showReset">
+            <div class="p-grid">
+                <div class="p-col-12 p-fluid" style="text-align: center;">
+                    <span class="form-group">
+                        <label class="c-medium-label" for="name">
+                            {{label('lbl_redefinir_senha_usuario')}} {{' ' + name}}
+                        </label>
+                    </span>
+                </div>
+            </div>
+            <hr>
+            <div class="p-grid">
+                <div class="p-col-12" style="text-align: center;">
+                    <button pButton type="button" pButton icon="fad fa-check-double"
+                        [label]="label('lbl_definir_para_senha_i')" (click)="resetPassword(1)">
+                    </button>
+                    <button pButton type="button" pButton icon="fad fa-check-double"
+                        [label]="label('lbl_enviar_nova_senha_p_e')" (click)="resetPassword(2)">
+                    </button>
+                </div>
+            </div>
+        </p-dialog>
+
+        <p-blockUI [target]="pnl2" [blocked]="blockedPanelUserGroup">
+            <i class="pi pi-spin pi-spinner" style="font-size: 2rem; color: whitesmoke;"></i>
+        </p-blockUI>
+
+        <p-dialog modal="modal" [header]="label('lbl_grupos_do_usuario')" [closable]="true" [(visible)]="showGroups">
+            <p-panel #pnl2 [showHeader]="false" styleClass="c-p-panel" [style]="{'min-height': '50px'}">
+                <ng-template ngFor let-item [ngForOf]="userGroups">
+                    <ul>
+                        <li style="margin-left: -20px; padding-right: 10px">{{item.name}} </li>
+                    </ul>
+                </ng-template>
+                <h4 style="text-align: center;">{{userGroups?.length == 0 ? label('lbl_vazio'): ''}}</h4>
+            </p-panel>
+        </p-dialog>
+
+
+    </div>
+
+</div>

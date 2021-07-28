@@ -1,0 +1,99 @@
+
+// .p-panel .p-panel-content {
+//   padding: 1.25rem;
+//   border: 1px solid #dfe7ef;
+//   background: #fff;
+//   color: #444;
+//   border-bottom-right-radius: 6px;
+//   border-bottom-left-radius: 6px;
+//   border-top: 0 none;
+// }
+
+@import "../../../variables.scss";
+
+.content-background{
+    height: 100%;
+    width: 100%;
+    background: url($c-back-image-login) no-repeat;
+    background-size: cover;
+    position: fixed;
+    top: 5.3rem;
+    left: 0;
+    overflow: hidden;
+
+    z-index: -1;
+    -webkit-filter: blur(15px);
+    -moz-filter: blur(15px);
+    -o-filter: blur(15px);
+    -ms-filter: blur(15px);
+    filter: blur(7px);
+}
+
+
+  // .content {
+  //   position: fixed;
+  //   left: 0;
+  //   right: 0;
+  //   z-index: 0;
+  //   margin-left: 20px;
+  //   margin-right: 20px;
+  // }
+
+.flex-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 5%;
+  }
+
+.content-credential{
+    width: 29rem;
+    height: 33rem;
+    float: right;
+    text-align: center;
+    background-color: #333;
+    padding: 1.875rem;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 0.625rem;
+}
+
+
+
+.content-credential-title{
+    color: whitesmoke;
+    font-size: 1.8rem; 
+}
+
+.poweredBy{
+    margin-top: 12%;
+    font-size: 0.8rem;
+    color: whitesmoke;
+}
+
+
+.flex-box-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  bottom: 0pt;
+  width: 100%;
+  height: 5.5rem;
+}
+
+.content-footer{
+  width: 40%;
+  height: 5.5rem;
+  float: right;
+  text-align: center;
+  background-color: #333;
+  //padding: 10px;
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 0.3rem;
+}
+
+
+.c-button-login{
+  border: 1px solid #666 !important;;            
+  color:#FFF !important;
+}

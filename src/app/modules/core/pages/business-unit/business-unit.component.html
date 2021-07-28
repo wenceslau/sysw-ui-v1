@@ -1,0 +1,411 @@
+<div class="c-container-page">
+    <app-user-action *ngIf="displayHistory" [inputModule]="'CORE'" [inputIdtRecord]="idRecord"
+        [inputNameObject]="nameObject" [inputDescription]="descriptionObject"
+        (hideComponentHistory)="hideComponentHistoryEvent($event)"></app-user-action>
+
+    <app-nav-bar [totalRecords]="totalRecords"></app-nav-bar>
+
+    <div class="c-container-page-containt" [style.height]="windowInnerHeightContainerPageContaint()">
+
+        <form autocomplete="off">
+            <div class="p-grid p-justify-rigth c-div-toolbar-filter">
+                <div class="p-col-fixed">
+                    <button pButton type="button" class="c-button-toolbar c-color-blue"
+                        icon="fad fa-plus-circle c-button-icon-size" [pTooltip]="label('lbl_novo_registro')"
+                        tooltipPosition="right" (click)="showDialogInput(null)"
+                        [disabled]="canDisable('CORE_BUSINESS_UNIT_INSERT')">
+                    </button>
+                    <button pButton type="button" class="c-button-toolbar c-color-green"
+                        icon="fad fa-sync c-button-icon-size" [pTooltip]="label('lbl_atualizacao_de_tela')"
+                        tooltipPosition="right" (click)="initListBusinessUnit()">
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <hr>
+
+        <div class="p-grid">
+            <div class="p-col">
+
+                <p-table #table styleClass="p-datatable-sm" selectionMode="single" [(selection)]="selectedRowMainTable"
+                    [value]="businessUnities" [responsive]="true">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th class="grid-col-id">ID</th>
+                            <th style="width: 15%">{{label('lbl_nome')}}</th>
+                            <th>{{label('lbl_descricao')}}</th>
+                            <th>{{label('lbl_identificador')}}</th>
+                            <th>{{label('lbl_imagen')}}</th>
+                            <th>{{label('lbl_json_licenca')}}</th>
+                            <th class="grid-col-status">Status</th>
+                            <th class="grid-col-action-3b"></th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-businessUnit>
+                        <tr [pSelectableRow]="businessUnit">
+                            <td [class]="classRowInactive('grid-col-id',businessUnit.status)">
+                                {{businessUnit.code}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',businessUnit.status)">
+                                {{businessUnit.name}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',businessUnit.status)">
+                                {{businessUnit.description}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',businessUnit.status)">
+                                {{businessUnit.uniqueId}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',businessUnit.status)">
+                                {{businessUnit.image}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',businessUnit.status)">
+                                {{businessUnit.valueLicense}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-status',businessUnit.status)">
+                                {{businessUnit.status ? 'Ativo' : 'Inativo'}}
+                            </td>
+                            <td class="grid-col-action-3b">
+                                <button class="c-button-grid c-color-green" pButton icon="fas fa-pencil"
+                                    pTooltip="Editar" tooltipPosition="top" (click)="showDialogInput(businessUnit.code)"
+                                    [disabled]="canDisable('CORE_BUSINESS_UNIT_UPDATE')">
+                                </button>
+                                <button class="c-button-grid c-color-blue" pButton icon="fal fa-indent"
+                                    pTooltip="Histórico" tooltipPosition="left"
+                                    (click)="showComponentHistory(businessUnit, businessUnit.code, businessUnit.name, 'BusinessUnit')">
+                                </button>
+                                <button class="c-button-grid c-color-blue" pButton icon="fad fa-key-skeleton"
+                                    (click)="showOverlayPanel(businessUnit)">
+                                </button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+
+
+            </div>
+            <div class="p-col-fixed" style="width:163px">
+
+                <app-info-model [inputModule]="'CORE'" [inputTotalRecords]="totalRecords"
+                    [inputEntity]="'BusinessUnit'">
+                </app-info-model>
+
+            </div>
+        </div>
+
+    </div>
+
+
+    <p-dialog modal="modal" [header]="handler.share.navigation" [responsive]="true" [closable]="true"
+        [style]="{width: '600px'}" [(visible)]="displayInput">
+        <form autocomplete="off" (ngSubmit)="saveBusinessUnit()" [formGroup]="formInput">
+            <div class="p-grid p-fluid">
+                <div class="p-col-12">
+                    <p-tabView activeIndex="0">
+                        <p-tabPanel [header]="label('lbl_dados')" [selected]="true">
+                            <div class="p-grid p-fluid">
+                                <div class="p-col-12">
+                                    <span class="form-group">
+                                        <label class="c-small-label" for="name">{{label('lbl_nome')}}</label>
+                                        <input pInputText required [class]="classReadonlyInput(readonlyBu, 1)"
+                                            type="text" name="name" formControlName="name" [readonly]="readonlyBu">
+                                    </span>
+                                </div>
+                                <div class="p-col-6">
+                                    <span class="form-group">
+                                        <label class="c-small-label"
+                                            for="applications">{{label('lbl_aplicacoes')}}</label>
+                                        <p-multiSelect [class]="classReadonlyDropdow(readonlyBu)" name="applications"
+                                            [options]="resumeApplications" optionLabel="name"
+                                            formControlName="applications" filter="false" [required]="true"
+                                            defaultLabel="." [showToggleAll]="false" scrollHeight="100px"
+                                            appendTo="body">
+                                        </p-multiSelect>
+                                    </span>
+                                </div>
+                                <div class="p-col-6">
+                                    <span class="form-group">
+                                        <label class="c-small-label"
+                                            for="uniqueId">{{label('lbl_identificador')}}</label>
+                                        <input pInputText [class]="classReadonlyInput(true, 2)" type="text"
+                                            name="uniqueId" formControlName="uniqueId" readonly>
+                                    </span>
+                                </div>
+                                <div class="p-col-12">
+                                    <span class="form-group">
+                                        <label class="c-small-label" for="license">{{label('lbl_licenca')}}</label>
+                                        <input pInputText required [class]="classReadonlyInput(readonlyBu, 1)"
+                                            type="text" name="license" formControlName="license"
+                                            [readonly]="readonlyBu">
+                                    </span>
+                                </div>
+                                <div class="p-col-12">
+                                    <span class="form-group">
+                                        <label class="c-small-label" for="image">{{label('lbl_imagen')}}</label>
+                                        <input pInputText required [class]="classReadonlyInput(readonlyBu, 1)"
+                                            type="text" name="image" formControlName="image" [readonly]="readonlyBu">
+                                    </span>
+                                </div>
+                                <div class="p-col-12">
+                                    <span class="form-group">
+                                        <label class="c-small-label"
+                                            for="description">{{label('lbl_descricao')}}</label>
+                                        <input pInputText [class]="classReadonlyInput(readonlyBu, 1)" type="text"
+                                            name="description" formControlName="description" [readonly]="readonlyBu">
+                                    </span>
+                                </div>
+                            </div>
+                        </p-tabPanel>
+                        <p-tabPanel [header]="label('lbl_parametro')">
+                            <p-table styleClass="p-datatable-sm" *ngIf="editing" [value]="buParameters"
+                                [responsive]="true" [scrollable]="true" scrollHeight="260px">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th style="width: 15%">{{label('lbl_aplicacao')}}</th>
+                                        <th style="width: 40%">{{label('lbl_chave')}}</th>
+                                        <th style="width: 30%">{{label('lbl_valor')}}</th>
+                                        <th class="grid-col-action-3b"></th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-bupar let-rowIndex="rowIndex">
+                                    <tr>
+                                        <td [class]="classRowInactive('grid-col-string',bupar.status)"
+                                            style="width: 12%">
+                                            {{bupar.application}}
+                                        </td>
+                                        <td [class]="classRowInactive('grid-col-string',bupar.status)"
+                                            style="width: 40%">
+                                            {{bupar.key}}
+                                        </td>
+                                        <td [class]="classRowInactive('grid-col-string',bupar.status)"
+                                            style="width: 30%">
+                                            {{bupar.value}}</td>
+                                        <td class="grid-col-action-3b">
+                                            <button class="c-button-grid c-color-blue" pButton type="button"
+                                                icon="fad fa-plus-circle" tooltipPosition="top"
+                                                [pTooltip]="label('lbl_editar')" (click)="preparerNewBuParameter()">
+                                            </button>
+                                            <button class="c-button-grid c-color-blue" pButton type="button"
+                                                icon="fad fa-pencil" tooltipPosition="top"
+                                                [pTooltip]="label('lbl_editar')" [disabled]="isSysDisable(bupar.key)"
+                                                (click)="preparerEditBuParameter(bupar, rowIndex)">
+                                            </button>
+                                            <button class="c-button-grid c-color-blue" pButton type="button"
+                                                icon="fab fa-invision" tooltipPosition="top"
+                                                [pTooltip]="bupar.description">
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </p-tabPanel>
+                    </p-tabView>
+                </div>
+                <div class="p-col-12">
+                    <hr>
+                    <p-toolbar styleClass="c-tooblar-dialog">
+                        <div class="p-toolbar-group-left">
+                            <p-checkbox [label]="label('lbl_ativo')" name="status" formControlName="status"
+                                binary="true">
+                            </p-checkbox>
+                        </div>
+                        <div class="p-toolbar-group-right">
+                            <button pButton class="p-button-sm" type="submit" pButton icon="fad fa-check-double"
+                                [label]="label('lbl_salvar')" [disabled]="!formInput.valid"></button>
+                            <button pButton class="p-button-sm c-color-back-red" type="button" pButton
+                                icon="fad fa-times" [label]="label('lbl_fechar')" (click)="hidenDialogInput()"></button>
+                        </div>
+                    </p-toolbar>
+                </div>
+            </div>
+        </form>
+    </p-dialog>
+
+    <p-dialog [header]="label('lbl_parametro')" modal="modal" [(visible)]="displayBuParameterInput" [responsive]="true"
+        [closable]="true" [style]="{width: '450px'}">
+        <form autocomplete="off" (ngSubmit)="confirmBuParameter()" [formGroup]="formParameterInput">
+            <div>
+                <div class="p-grid p-fluid">
+
+                    <div class="p-col-12">
+                        <span class="form-group">
+                            <label class="c-small-label" for="application">{{label('lbl_aplicacao')}}</label>
+                            <input pInputText type="text" name="application" formControlName="application" required>
+                        </span>
+                    </div>
+
+                    <div class="p-col-12">
+                        <span class="form-group">
+                            <label class="c-small-label" for="name">{{label('lbl_chave')}}</label>
+                            <input pInputText type="text" name="name" formControlName="key" [pKeyFilter]="blockSpace"
+                                [ngModel]="formParameterInput.get('key').value | uppercase" required>
+                        </span>
+                    </div>
+
+                    <div class="p-col-12">
+                        <span class="form-group">
+                            <label class="c-small-label" for="value">{{label('lbl_valor')}}</label>
+                            <input pInputText type="text" name="value" formControlName="value">
+                        </span>
+                    </div>
+
+                    <div class="p-col-12">
+                        <span class="form-group">
+                            <label class="c-small-label" for="description">{{label('lbl_descricao')}}</label>
+                            <input pInputText type="text" name="description" formControlName="description" required>
+                        </span>
+                    </div>
+                    <div class="p-col-12" style="margin-bottom: -10px;">
+                        <hr>
+                        <p-toolbar styleClass="c-tooblar-dialog">
+                            <div class="p-toolbar-group-left">
+                                <span style="padding-right: 10px;">
+                                    <p-checkbox [label]="label('lbl_ativo')" name="status" formControlName="status"
+                                        binary="true">
+                                    </p-checkbox>
+                                </span>
+                            </div>
+                            <div class="p-toolbar-group-right">
+                                <button pButton class="p-button-sm" type="submit" pButton icon="fad fa-check-double"
+                                    [label]="label('lbl_adicionar')" [disabled]="!formParameterInput.valid"></button>
+                                <button pButton class="p-button-sm c-color-back-red" type="button" pButton
+                                    icon="fad fa-times" [label]="label('lbl_fechar')"
+                                    (click)="displayBuParameterInput = false"></button>
+                            </div>
+                        </p-toolbar>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </p-dialog>
+
+
+    <p-dialog modal="modal" header="Input the key for generate license" [(visible)]="displayInputKey"
+        [responsive]="true" [closable]="true" [style]="{width: '450px'}">
+        <div class="p-grid p-fluid">
+            <div class="p-col-9">
+                <input pInputText type="text" [(ngModel)]="keyValue">
+            </div>
+            <div class="p-col-2">
+                <button pButton pButton class="p-button-sm" label="OK" (click)="key()"></button>
+            </div>
+        </div>
+
+    </p-dialog>
+
+    <p-dialog header="License: {{unitBusinesName}}" modal="modal" [(visible)]="displayLicencse" [responsive]="true"
+        [closable]="true" [style]="{width: '800px'}">
+
+        <div class="p-grid">
+
+            <div class="p-col-4 p-fluid">
+                <span class="form-group">
+                    <label class="c-small-label"
+                        for="businesUniqueId">{{label('lbl_identificador_unidade_negocio')}}</label>
+                    <input pInputText type="text" name="businesUniqueId" [class]="classReadonlyInput(true, 2)"
+                        [(ngModel)]="license.businesUniqueId" readonly>
+                </span>
+            </div>
+
+            <div class="p-col-4 p-fluid">
+                <span class="form-group">
+                    <label class="c-small-label" for="application">{{label('lbl_aplicacao')}}</label>
+                    <p-dropdown required name="application" placeholder="." appendTo="body" optionLabel="name"
+                        [options]="applications" [(ngModel)]="application" (onChange)="onChangeApplication()">
+                    </p-dropdown>
+                </span>
+            </div>
+
+            <div class="p-col-4 p-fluid">
+                <span class="form-group">
+                    <label class="c-small-label"
+                        for="applicationUniqueId">{{label('lbl_identificador_aplicacao')}}</label>
+                    <input pInputText type="text" [class]="classReadonlyInput(true, 2)"
+                        [(ngModel)]="appLicense.applicationUniqueId" readonly>
+                </span>
+            </div>
+
+            <div class="p-col-4 p-fluid">
+                <span class="form-group">
+                    <label class="c-small-label" for="applicationUniqueId">{{label('lbl_data_expiracao')}}</label>
+                    <p-calendar ngModel appendTo="body" showDelay="1000" yearRange="2020:2030" dateFormat="dd/mm/yy"
+                        [showButtonBar]="true" [style]="{width: '213px'}" [readonlyInput]="true" [monthNavigator]="true"
+                        [yearNavigator]="true" [showButtonBar]="true" [locale]="ptCalendar"
+                        [(ngModel)]="appLicense.expiration">
+                    </p-calendar>
+                </span>
+            </div>
+
+            <div class="p-col-4 p-fluid">
+                <span class="form-group">
+                    <label class="c-small-label" for="licenceNumber">{{label('lbl_numero_licenca')}}</label>
+                    <input pInputText type="text" pKeyFilter="int" [(ngModel)]="appLicense.licenceNumber"
+                        (focusout)="onChangeLicenseNumber()">
+                </span>
+            </div>
+
+            <div class="p-col-4 p-fluid">
+                <span class="form-group">
+                    <label class="c-small-label" for="applicationUniqueId">{{label('lbl_detalhe_licenca')}}</label>
+                    <input pInputText type="text" [class]="classReadonlyInput(false, 2)"
+                        [(ngModel)]="appLicense.detailLicenseNumber">
+                </span>
+            </div>
+
+            <div class="p-col-12">
+                <hr>
+                <button pButton class="p-button-sm" [label]="label('lbl_adicionar')" (click)="addAppLicense()">
+                </button>
+                <button pButton class="p-button-sm" [label]="label('lbl_limpar')" (click)="clearAppLicense()">
+                </button>
+            </div>
+            <div class="p-col-12" style="height: 100px;">
+                <hr style="margin-top: 3px; margin-bottom: -10px;">
+                <p-table #tableDatasource [value]="license.appLicences" [responsive]="true">
+                    <ng-template pTemplate="header">
+                        <tr style="text-align: center;">
+                            <th style="width: 11%">{{label('lbl_aplicacao')}}</th>
+                            <th style="width: 21%">{{label('lbl_identificador')}}</th>
+                            <th style="width: 18%">{{label('lbl_data_expiracao')}}</th>
+                            <th style="width: 20%">{{label('lbl_numero_licenca')}}</th>
+                            <th style="width: 30%">{{label('lbl_detalhe_licenca')}}</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-appLicense>
+                        <tr style="text-align: center;">
+                            <td [class]="classRowInactive('grid-col-string',true)">
+                                {{appLicense.applicationName}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',true)">
+                                {{appLicense.applicationUniqueId}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',true)">
+                                {{appLicense.expiration | date:'dd/MM/yyyy'}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',true)">
+                                {{appLicense.licenceNumber}}
+                            </td>
+                            <td [class]="classRowInactive('grid-col-string',true)">
+                                {{appLicense.detailLicenseNumber}}
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+            <div class="p-col-12">
+                <br>
+                <hr style="margin-top: 3px; margin-bottom: -10px;">
+                <br>
+                <button pButton class="p-button-sm" [label]="label('lbl_gerar_licenca')" (click)="generate()">
+                </button>
+            </div>
+            <div class="p-col-12">
+                <textarea pInputTextarea [class]="classReadonlyInput(true, 2)" readonly [rows]="8" [cols]="106"
+                    [(ngModel)]="sysmonkey">
+                </textarea>
+            </div>
+        </div>
+    </p-dialog>
+
+
+</div>

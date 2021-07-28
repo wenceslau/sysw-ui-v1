@@ -1,0 +1,19 @@
+.container-cards{
+    padding: 1rem;
+}
+
+:host ::ng-deep .my-p-card-content.p-card {
+    .p-card-content {
+        padding: 0.25rem 0;
+    }
+    .p-card {
+        background-color: #EFF3F8;
+    }
+}
+
+
+.vertical-align {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%); /* Adicionar os prefixos dos navegadores */
+}

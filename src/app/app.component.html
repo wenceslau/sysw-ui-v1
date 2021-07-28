@@ -1,0 +1,36 @@
+<app-header-bar></app-header-bar>
+
+<router-outlet></router-outlet>
+
+<p-dialog modal="true" styleClass="c-dialog" [showHeader]="false" [closable]="false"
+    [style]="{width: '200px', height: '190px'}" [(visible)]="handler.blockedDocument">
+    <div class="p-grid" style="height: 170px;">
+        <div class="p-col-12" style="text-align: center">
+            <h3><label>{{label('lbl_aguarde')}}</label></h3>
+        </div>
+        <!-- <div class="p-col-12" *ngIf="handler.messageWait !== ''" style="text-align: center;">
+            <h4><label></label></h4>
+        </div> -->
+        <div class="p-col-12">
+            <p-progressBar mode="indeterminate" [style]="{'height': '6px'}"></p-progressBar>
+        </div>
+    </div>
+</p-dialog>
+
+
+<p-confirmDialog [header]="label('lbl_confirmacao')" #confirmacao [style]="{width: '28vw'}" [baseZIndex]="10000">
+    <p-footer>
+        <button pButton type="button" styleClass="p-button-sm" icon="fad fa-check-double" [label]="label('lbl_sim')"
+            (click)="confirmacao.accept()"></button>
+        <button pButton type="button" class="c-color-back-red" styleClass="p-button-sm" icon="fas fa-times"
+            [label]="label('lbl_nao')" (click)="confirmacao.reject()"></button>
+    </p-footer>
+</p-confirmDialog>
+
+<p-sidebar [(visible)]="handler.notifyShow"
+    [style]="{ 'height':'40px','margin-left':'300px','margin-bottom':'30px','padding-right':'300px','background-color': 'lightyellow'}"
+    position="bottom" [modal]="false" [baseZIndex]="30000">
+    <div style="font-weight:bold">
+        <label>{{handler?.notify?.message}} Usuario: {{handler?.notify?.userName}} </label>
+    </div>
+</p-sidebar>
